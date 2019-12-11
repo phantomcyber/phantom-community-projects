@@ -1,0 +1,73 @@
+<!-- File: display_attributes.html
+  Copyright (c) 2016-2019 Splunk Inc.
+  Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)
+-->
+
+{% extends 'widgets/widget_template.html' %}
+{% load custom_template %}
+
+{% block title_color %}
+{{ title_color|default:'white' }}
+{% endblock %}
+{% block title_text_color %}
+{{ title_text_color|default:'rgb(101, 71, 150)' }}
+{% endblock %}
+{% block body_color %}
+{{ body_color|default:'white' }}
+{% endblock %}
+{% block body_text_color %}
+{{ body_text_color|default:'black' }}
+{% endblock %}
+{% block custom_title_prop %}
+{% if title_logo %}
+style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image:
+url('/app_resource/{{ title_logo }}');"
+{% endif %}
+{% endblock %}
+{% block title1 %}
+{{ title1 }}
+{% endblock %}
+{% block title2 %}
+{{ title2 }}
+{% endblock %}
+{% block custom_tools %}
+{% endblock %}
+
+{% block widget_content %}
+<style>
+.wf-table-vertical {
+  width: initial;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.tdpad {
+    padding: 5px;
+}
+</style>
+<div style="overflow: scrollbar; width: 100%; height: 100%; padding-left:10px; padding-right:10px">
+    {% if attributes %}
+        <table class="wf-table-vertical">
+            <tr>
+            {% for a in attributes %}
+                <td class="tdpad">
+                    {{ a }}
+                </td>
+            {% endfor %}
+            </tr>
+            {% for result in results.0.data.entries %}
+            <tr>
+            {% for k,v in result.attributes.items %}
+                <td class="tdpad">
+                    {{ v }}
+                </td>
+            {% endfor %}
+            </tr>
+            {% endfor %}
+            {# endcomment #}
+        </table>
+    {% else %}
+        <h2>Error occurred</h2>
+        Error: {{ error }}
+    {% endif %}
+</div> <!-- Main Div -->
+{% endblock %}

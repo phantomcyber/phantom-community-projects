@@ -1,0 +1,653 @@
+{
+    "appid": "a5730e5d-a396-4695-92c2-35ff391aaf45",
+    "name": "AD LDAP",
+    "description": "App specifically designed for interacting with Microsoft Active Directory's LDAP Implementation",
+    "type": "identity management",
+    "product_vendor": "Splunk",
+    "logo": "adldap.svg",
+    "logo_dark": "adldap_dark.svg",
+    "product_name": "Active Directory LDAP",
+    "product_version_regex": ".*",
+    "publisher": "Splunk",
+    "license": "Copyright (c) Splunk, 2019",
+    "app_version": "1.0.0",
+    "utctime_updated": "2019-10-27T05:06:05.140684Z",
+    "package_name": "phantom_adldap",
+    "main_module": "adldap_connector.pyc",
+    "min_phantom_version": "4.6.18265",
+    "app_wizard_version": "1.0.0",
+    "pip_dependencies": {
+        "wheel": [
+            {
+                "module": "ldap3",
+                "input_file": "wheels/ldap3-2.6.1-py2.py3-none-any.whl"
+            }
+        ]
+    },
+    "configuration": {
+        "server": {
+            "description": "The Active Directory Server hostname, IP, or VIP for binding",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "",
+            "order": 0
+        },
+        "username": {
+            "description": "The username with which to bind to LDAP",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "",
+            "order": 1
+        },
+        "password": {
+            "description": "The password for the binding user",
+            "data_type": "password",
+            "required": true,
+            "order": 2
+        },
+        "force_ssl": {
+            "description": "Force the use of SSL protocol. Note that some actions are not possible without secure binding!",
+            "data_type": "boolean",
+            "required": true,
+            "default": true,
+            "order": 3
+        },
+        "ssl_port": {
+            "description": "The port to bind for SSL (default 636)",
+            "data_type": "numeric",
+            "required": true,
+            "value_list": [],
+            "default": "636",
+            "order": 4
+        }
+    },
+    "actions": [
+        {
+            "action": "test connectivity",
+            "identifier": "test_connectivity",
+            "description": "Validate the asset configuration for connectivity using supplied configuration",
+            "verbose": "",
+            "type": "test",
+            "read_only": true,
+            "parameters": {},
+            "output": [],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "add group members",
+            "identifier": "add_group_members",
+            "description": "Adds one more more AD objects to one or more groups",
+            "verbose": "",
+            "type": "custom",
+            "read_only": false,
+            "versions": "EQ(*)",
+            "parameters": {
+                "use_samaccountname": {
+                    "description": "Specify members AND groups as samaccountnames instead of distinguished names",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                },
+                "members": {
+                    "description": "Semi-colon (';') separated list of users. If 'use samaccountname' is false then these must be distinguished names.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1
+                },
+                "groups": {
+                    "description": "Semi-colon (';') separated list of groups to which the members will be added. If 'use samaccountname' is false, then these must be distinguished names.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 2
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.use_samaccountname",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "use_samaccountname",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.add_group_members",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "group members",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.member",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "member",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.function",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "function",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.data.*.group",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "group",
+                    "column_order": 4
+                }
+            ],
+            "render": {
+                "type": "table"
+            }
+        },
+        {
+            "action": "unlock account",
+            "identifier": "unlock_account",
+            "description": "Unlocks a locked Active Directory account",
+            "verbose": "",
+            "type": "custom",
+            "read_only": false,
+            "versions": "EQ(*)",
+            "parameters": {
+                "user": {
+                    "description": "Specify the user dn to unlock",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                }
+            },
+            "output": [
+                 {
+                    "data_path": "action_result.parameter.user",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "target user",
+                    "column_order": 0
+                }
+            ],
+            "render": {
+                "type": "table"
+            }
+        },
+        {
+            "action": "disable account",
+            "identifier": "disable_account",
+            "description": "Disables an Active Directory account",
+            "verbose": "",
+            "type": "custom",
+            "read_only": false,
+            "versions": "EQ(*)",
+            "parameters": {
+                "user": {
+                    "description": "Specify the dn to disable",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                }
+            },
+            "output": [
+                 {
+                    "data_path": "action_result.parameter.user",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "target user",
+                    "column_order": 0
+                }
+            ],
+            "render": {
+                "type": "table"
+            }
+        },
+        {
+            "action": "enable account",
+            "identifier": "enable_account",
+            "description": "Enables a disabled Active Directory account",
+            "verbose": "",
+            "type": "custom",
+            "read_only": false,
+            "versions": "EQ(*)",
+            "parameters": {
+                "user": {
+                    "description": "Specify the dn to enable",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                }
+            },
+            "output": [
+                 {
+                    "data_path": "action_result.parameter.user",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "target user",
+                    "column_order": 0
+                }
+            ],
+            "render": {
+                "type": "table"
+            }
+        },
+        {
+            "action": "reset password",
+            "identifier": "reset_password",
+            "description": "Reset a user's password",
+            "verbose": "",
+            "type": "custom",
+            "read_only": false,
+            "versions": "EQ(*)",
+            "parameters": {
+                "user": {
+                    "description": "Specify the dn to enable",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                },
+                "password": {
+                    "description": "New password",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 1
+                }
+            },
+            "output": [
+                 {
+                    "data_path": "action_result.parameter.user",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "target user",
+                    "column_order": 0
+                }
+            ],
+            "render": {
+                "type": "table"
+            }
+        },
+        {
+            "action": "move object",
+            "identifier": "move_object",
+            "description": "moves an object in active directory",
+            "verbose": "",
+            "type": "custom",
+            "read_only": false,
+            "versions": "EQ(*)",
+            "parameters": {
+                "object": {
+                    "description": "Specify the dn to enable",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                },
+                "new_ou": {
+                    "description": "the new ou",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 1
+                }
+            },
+            "output": [
+                 {
+                    "data_path": "action_result.parameter.user",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "target user",
+                    "column_order": 0
+                }
+            ],
+            "render": {
+                "type": "table"
+            }
+        },
+        {
+            "action": "remove group members",
+            "identifier": "remove_group_members",
+            "description": "Removes one more more AD objects to one or more groups",
+            "verbose": "",
+            "type": "custom",
+            "read_only": false,
+            "versions": "EQ(*)",
+            "parameters": {
+                "use_samaccountname": {
+                    "description": "Specify members AND groups as samaccountnames instead of distinguished names",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                },
+                "members": {
+                    "description": "Semi-colon (';') separated list of users. If 'use samaccountname' is false then these must be distinguished names.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1
+                },
+                "groups": {
+                    "description": "Semi-colon (';') separated list of groups to which the members will be added. If 'use samaccountname' is false, then these must be distinguished names.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 2
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.use_samaccountname",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "use_samaccountname",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.remove_group_members",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "group members",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.member",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "member",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.function",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "function",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.data.*.group",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "group",
+                    "column_order": 4
+                }
+            ],
+            "render": {
+                "type": "table"
+            }
+        },
+        {
+            "action": "query",
+            "identifier": "query",
+            "description": "Query Active Directory LDAP",
+            "verbose": "This action flexibly supports querying Active Directory using LDAP syntax. This app has some features making it specific to Active Directory.",
+            "type": "investigate",
+            "read_only": true,
+            "parameters": {
+                "filter": {
+                    "description": "The LDAP filter",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0
+                },
+                "search_base": {
+                    "description": "The search base to use. If not specified, the 'defaultNamingContext' will be used.",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1
+                },
+                "attributes": {
+                    "description": "Comma separated list of attributes to collect.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "default": "samaccountname",
+                    "order": 2
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.filter",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "filter",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.search_base",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "search_base",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.parameter.search_base",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "search_base",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "custom",
+                "width": 10,
+                "height": 5,
+                "view": "query_view.display_attributes",
+                "title": "AD Query"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "get attribute",
+            "identifier": "get_attributes",
+            "description": "Get attributes of various principals",
+            "verbose": "This action takes any number of principals (samaccountname, distinguishedname, or userprincipalname) and returns requested attributes. Separate with semi-colon (';')",
+            "type": "investigate",
+            "read_only": true,
+            "parameters": {
+                "principals": {
+                    "description": "The semi-colon separated principals",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0
+                },
+                "attributes": {
+                    "description": "Semi-colon separated list of attributes to collect.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "default": "samaccountname",
+                    "order": 1
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.principals",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "search_base",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "column_name": "Objects Found",
+                    "column_order": 3
+                }
+            ],
+            "render": {
+                "type": "custom",
+                "width": 10,
+                "height": 5,
+                "view": "query_view.display_attributes",
+                "title": "AD Query"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "set attribute",
+            "identifier": "set_attribute",
+            "description": "Get attributes of various principals",
+            "verbose": "This action takes any number of principals (samaccountname, distinguishedname, or userprincipalname) and returns requested attributes. Separate with semi-colon (';')",
+            "type": "investigate",
+            "read_only": true,
+            "parameters": {
+                "user": {
+                    "description": "The semi-colon separated principals",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0
+                },
+                "attribute": {
+                    "description": "Semi-colon separated list of attributes to collect.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "default": "samaccountname",
+                    "order": 1
+                },
+                "value": {
+                    "description": "Semi-colon separated list of attributes to collect.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "default": "samaccountname",
+                    "order": 2
+                },
+                "action": {
+                    "description": "Semi-colon separated list of attributes to collect.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "value_list": [
+                        "ADD", "DELETE", "REPLACE"
+                    ],
+                    "default": "samaccountname",
+                    "order": 3
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.principals",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "search_base",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                }
+            ],
+            "render": {
+                "type": "custom",
+                "width": 10,
+                "height": 5,
+                "view": "query_view.display_attributes",
+                "title": "AD Query"
+            },
+            "versions": "EQ(*)"
+        }
+    ]
+}
