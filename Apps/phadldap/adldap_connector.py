@@ -12,6 +12,9 @@ from phantom.action_result import ActionResult
 
 # switched from python-ldap to ldap3 for this app. -gsh
 import ldap3
+import ldap3.extend.microsoft.addMembersToGroups
+import ldap3.extend.microsoft.removeMembersFromGroups
+import ldap3.extend.microsoft.unlockAccount
 from ldap3.utils.dn import parse_dn
 import json
 # from adldap_consts import *
@@ -97,6 +100,44 @@ class AdLdapConnector(BaseConnector):
         else:
             return False
 
+    def _sam_to_dn(self, sam, action_result=None):
+        """
+        This method will take a list of samaccountnames
+        and return a dictionary with the key as the
+        samaccountname and the value as the distinguishedname.
+
+        If a corresponding distinguishedname was not found, then
+        the key will be the samaccountname and the value will be
+        False.
+        """
+
+        # create a usable ldap filter
+        filter = "(|"
+        for u in sam:
+            filter = filter + "(samaccountname={})".format(u)
+        filter = filter + ")"
+        p = {
+            "attributes": "distinguishedname;samaccountname",
+            "filter": filter
+        }
+        dn = json.loads(self._query(param=p))
+        r = {name: False for name in sam}
+        for i in dn['entries']:
+            s = i['attributes']['sAMAccountName']
+            if s in r:
+                r[s] = i['attributes']['distinguishedName']
+
+        self.debug_print("[DEBUG] sam = {}, len(sam) = {}".format(sam, len(sam)))
+
+        # if action_result, add summary regarding number of records requested
+        # vs number of records found.
+        if action_result:
+            action_result.update_summary({
+                "requested records": len(sam),
+                "found records": len([k for (k, v) in r.items() if v is not False])
+            })
+        return r
+
     def _get_filtered_response(self):
         """
         returns a list of objects from LDAP results
@@ -115,21 +156,51 @@ class AdLdapConnector(BaseConnector):
         if add=True then add to groups.
         if add=False then remove from groups.
         """
-        action_result = self.add_action_result(ActionResult(dict(param)))
 
-        use_sam = param.get('use_samaccountname', False)
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        if not self._ldap_bind():
+            return RetVal(action_result.set_status(phantom.APP_ERROR))
+
         members = [i.strip() for i in param['members'].split(';')]
         groups = [i.strip() for i in param['groups'].split(';')]
 
-        self.debug_print("use_sam = {}, members = {}, groups = {}".format(use_sam, members, groups))
+        # resolve samaccountname -> distinguishedname if option selected
+        if param.get('use_samaccountname', False):
+            n_members = []  # new list of users
+            n_groups = []   # new list of groups
+            member_nf = []  # not found users
+            group_nf = []   # not found groups
 
-        if not self._ldap_bind():
-            return RetVal(action_result.set_status(phantom.APP_ERROR))
+            # finding users dn by sam
+            t_users = self._sam_to_dn(members, action_result=action_result)
+            for k, v in t_users.items():
+                if v is False:
+                    member_nf.append(k)
+                else:
+                    n_members.append(v)
+
+            # finding groups dn by sam
+            t_group = self._sam_to_dn(groups, action_result=action_result)
+            for k, v in t_group.items():
+                if v is False:
+                    group_nf.append(k)
+                else:
+                    n_groups.append(v)
+
+            # ensure we actually have a least 1 user and group to modify
+            if len(n_members) > 0 and len(n_groups) > 0:
+                members = n_members
+                groups = n_groups
+            else:
+                return RetVal(
+                    action_result.set_status(phantom.APP_ERROR)
+                )
+        self.debug_print("[DEBUG] members = {}, groups = {}".format(members, groups))
 
         try:
             if add:
                 func = "added"
-                ldap3.extend.microsoft.c(
+                ldap3.extend.microsoft.addMembersToGroups.ad_add_members_to_groups(
                     connection=self._ldap_connection,
                     members_dn=members,
                     groups_dn=groups,
@@ -138,7 +209,7 @@ class AdLdapConnector(BaseConnector):
                 )
             else:
                 func = "removed"
-                ldap3.extend.microsoft.ad_remove_members_from_groups(
+                ldap3.extend.microsoft.removeMembersFromGroups.ad_remove_members_from_groups(
                     connection=self._ldap_connection,
                     members_dn=members,
                     groups_dn=groups,
@@ -152,6 +223,7 @@ class AdLdapConnector(BaseConnector):
                 exception=e
             ))
 
+        # add action data results
         for i in members:
             for j in groups:
                 action_result.add_data({
@@ -167,15 +239,25 @@ class AdLdapConnector(BaseConnector):
 
     def _handle_unlock_account(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
+        summary = action_result.update_summary({})
 
         user = param['user']
+
+        if param.get("use_samaccountname", False):
+            user_dn = self._sam_to_dn([user])   # _sam_to_dn requires a list.
+            self.debug_print("[DEBUG] handle_unlock_account user_dn = {}".format(user_dn))
+            if len(user_dn) == 0 or user_dn[user] is False:
+                return RetVal(action_result.set_status(
+                    phantom.APP_ERROR
+                ))
+
         if not self._ldap_bind():
             return RetVal(action_result.set_status(phantom.APP_ERROR))
 
         try:
-            ldap3.extend.microsft.ad_unlock_account(
+            ldap3.extend.microsoft.unlockAccount.ad_unlock_account(
                 self._ldap_connection,
-                user_dn=user,
+                user_dn=user_dn[user],
             )
         except Exception as e:
             return RetVal(action_result.set_status(
@@ -184,6 +266,7 @@ class AdLdapConnector(BaseConnector):
                 exception=e
             ))
 
+        summary['summary'] = "Unlocked"
         return RetVal(action_result.set_status(
             phantom.APP_SUCCESS
         ))

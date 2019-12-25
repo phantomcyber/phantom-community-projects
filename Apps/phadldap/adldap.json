@@ -85,6 +85,108 @@
             "versions": "EQ(*)",
             "parameters": {
                 "use_samaccountname": {
+                    "description": "Specify members AND groups as samaccountnames instead of distinguished names (note: member AND groups will use samaccountname if selected).",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                },
+                "members": {
+                    "description": "Semi-colon (';') separated list of users. If 'use samaccountname' is false then these must be distinguished names.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 1
+                },
+                "groups": {
+                    "description": "Semi-colon (';') separated list of groups to which the members will be added. If 'use samaccountname' is false, then these must be distinguished names.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 2
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.data.*.member",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "member",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.function",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "function",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.group",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "group",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string",
+                    "contains": []                    
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.use_samaccountname",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.members",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.groups",
+                    "data_type": "string",
+                    "contains": []
+                }
+            ],
+            "render": {
+                "type": "table"
+            }
+        },
+        {
+            "action": "remove group members",
+            "identifier": "remove_group_members",
+            "description": "Removes one more more AD objects to one or more groups",
+            "verbose": "",
+            "type": "custom",
+            "read_only": false,
+            "versions": "EQ(*)",
+            "parameters": {
+                "use_samaccountname": {
                     "description": "Specify members AND groups as samaccountnames instead of distinguished names",
                     "data_type": "boolean",
                     "required": false,
@@ -117,39 +219,60 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.parameter.use_samaccountname",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "use_samaccountname",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.parameter.add_group_members",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "group members",
-                    "column_order": 1
-                },
-                {
                     "data_path": "action_result.data.*.member",
                     "data_type": "string",
                     "contains": [],
                     "column_name": "member",
-                    "column_order": 2
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.data.*.function",
                     "data_type": "string",
                     "contains": [],
                     "column_name": "function",
-                    "column_order": 3
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.data.*.group",
                     "data_type": "string",
                     "contains": [],
                     "column_name": "group",
-                    "column_order": 4
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string",
+                    "contains": []                    
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.use_samaccountname",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.members",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.groups",
+                    "data_type": "string",
+                    "contains": []
                 }
             ],
             "render": {
@@ -165,6 +288,16 @@
             "read_only": false,
             "versions": "EQ(*)",
             "parameters": {
+                "use_samaccountname": {
+                    "description": "Use samaccountname for user instead of distinguished name.",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                },
                 "user": {
                     "description": "Specify the user dn to unlock",
                     "data_type": "string",
@@ -173,7 +306,7 @@
                     "contains": [],
                     "value_list": [],
                     "default": false,
-                    "order": 0
+                    "order": 1
                 }
             },
             "output": [
@@ -183,6 +316,13 @@
                     "contains": [],
                     "column_name": "target user",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "Summary",
+                    "column_order": 1
                 }
             ],
             "render": {
@@ -335,87 +475,6 @@
                     "contains": [],
                     "column_name": "target user",
                     "column_order": 0
-                }
-            ],
-            "render": {
-                "type": "table"
-            }
-        },
-        {
-            "action": "remove group members",
-            "identifier": "remove_group_members",
-            "description": "Removes one more more AD objects to one or more groups",
-            "verbose": "",
-            "type": "custom",
-            "read_only": false,
-            "versions": "EQ(*)",
-            "parameters": {
-                "use_samaccountname": {
-                    "description": "Specify members AND groups as samaccountnames instead of distinguished names",
-                    "data_type": "boolean",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": false,
-                    "order": 0
-                },
-                "members": {
-                    "description": "Semi-colon (';') separated list of users. If 'use samaccountname' is false then these must be distinguished names.",
-                    "data_type": "string",
-                    "required": true,
-                    "primary": true,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 1
-                },
-                "groups": {
-                    "description": "Semi-colon (';') separated list of groups to which the members will be added. If 'use samaccountname' is false, then these must be distinguished names.",
-                    "data_type": "string",
-                    "required": true,
-                    "primary": true,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 2
-                }
-            },
-            "output": [
-                {
-                    "data_path": "action_result.parameter.use_samaccountname",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "use_samaccountname",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.parameter.remove_group_members",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "group members",
-                    "column_order": 1
-                },
-                {
-                    "data_path": "action_result.data.*.member",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "member",
-                    "column_order": 2
-                },
-                {
-                    "data_path": "action_result.data.*.function",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "function",
-                    "column_order": 3
-                },
-                {
-                    "data_path": "action_result.data.*.group",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "group",
-                    "column_order": 4
                 }
             ],
             "render": {
