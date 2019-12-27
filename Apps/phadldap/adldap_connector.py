@@ -195,7 +195,6 @@ class AdLdapConnector(BaseConnector):
                 return RetVal(
                     action_result.set_status(phantom.APP_ERROR)
                 )
-        self.debug_print("[DEBUG] members = {}, groups = {}".format(members, groups))
 
         try:
             if add:
@@ -297,18 +296,29 @@ class AdLdapConnector(BaseConnector):
 
         user = param['user']
 
+        # let the analyst use samaccountname if they wish
+        if param.get("use_samaccountname", False):
+            user_info = self._sam_to_dn([user])
+            if user_info[user] is False:
+                return RetVal(action_result.set_status(
+                    phantom.APP_ERROR,
+                    "No users found."
+                ))
+            else:
+                user = user_info[user]
+
         try:
             query_params = {
                 "attributes": "useraccountcontrol",
                 "filter": "(distinguishedname={})".format(user)
             }
-            self._handle_query(query_params)
-            resp = self._get_filtered_response()
-            uac = int(resp[0]['attributes']['userAccountControl'])
+            resp = json.loads(self._query(query_params))
+            self.debug_print("[DEBUG] account_status, resp = {}".format(resp))
+            uac = int(resp['entries'][0]['attributes']['userAccountControl'])
 
             if disable:
                 mod_uac = uac | 0x02
-            else:
+            else:   # enable
                 mod_uac = uac & (0xFFFFFFFF ^ 0x02)
             res = self._ldap_connection.modify(
                 user, {'userAccountControl': [
@@ -435,7 +445,8 @@ class AdLdapConnector(BaseConnector):
     def _query(self, param):
         """
         This method handles the query and returns
-        the response in the ldap connectin object.
+        the response in the ldap connection object
+        as json.
 
         Returns the data or throws and exception.
         param must include:

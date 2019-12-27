@@ -370,6 +370,16 @@
             "read_only": false,
             "versions": "EQ(*)",
             "parameters": {
+                "use_samaccountname": {
+                    "description": "Specify samaccountname instead of distinguishedname",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                },
                 "user": {
                     "description": "Specify the dn to disable",
                     "data_type": "string",
@@ -378,7 +388,7 @@
                     "contains": [],
                     "value_list": [],
                     "default": false,
-                    "order": 0
+                    "order": 1
                 }
             },
             "output": [
@@ -403,6 +413,16 @@
             "read_only": false,
             "versions": "EQ(*)",
             "parameters": {
+                "use_samaccountname": {
+                    "description": "Specify samaccountname instead of distinguishedname",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                },
                 "user": {
                     "description": "Specify the dn to enable",
                     "data_type": "string",
@@ -411,7 +431,7 @@
                     "contains": [],
                     "value_list": [],
                     "default": false,
-                    "order": 0
+                    "order": 1
                 }
             },
             "output": [
