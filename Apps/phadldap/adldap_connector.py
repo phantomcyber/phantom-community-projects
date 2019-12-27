@@ -133,8 +133,8 @@ class AdLdapConnector(BaseConnector):
         # vs number of records found.
         if action_result:
             action_result.update_summary({
-                "requested records": len(sam),
-                "found records": len([k for (k, v) in r.items() if v is not False])
+                "requested_user_records": len(sam),
+                "found_user_records": len([k for (k, v) in r.items() if v is not False])
             })
         return r
 
@@ -180,7 +180,7 @@ class AdLdapConnector(BaseConnector):
                     n_members.append(v)
 
             # finding groups dn by sam
-            t_group = self._sam_to_dn(groups, action_result=action_result)
+            t_group = self._sam_to_dn(groups)   # omit action_result to avoid updating user count
             for k, v in t_group.items():
                 if v is False:
                     group_nf.append(k)
