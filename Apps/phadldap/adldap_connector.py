@@ -238,18 +238,28 @@ class AdLdapConnector(BaseConnector):
         ))
 
     def _handle_unlock_account(self, param):
+        """
+        This method unlocks an active directory account.
+
+        If the use_samaccountname is checked, method will resolve
+        the input samaccountname(user) -> distinguishedName and then use the
+        ldap3 library to unlock the account.
+        """
         action_result = self.add_action_result(ActionResult(dict(param)))
         summary = action_result.update_summary({})
-
         user = param['user']
+        ar_data = {}            # data for action_result
 
         if param.get("use_samaccountname", False):
             user_dn = self._sam_to_dn([user])   # _sam_to_dn requires a list.
-            self.debug_print("[DEBUG] handle_unlock_account user_dn = {}".format(user_dn))
             if len(user_dn) == 0 or user_dn[user] is False:
                 return RetVal(action_result.set_status(
                     phantom.APP_ERROR
                 ))
+            ar_data["user_dn"] = user_dn[user]
+            ar_data["samaccountname"] = user
+        else:
+            ar_data["user_dn"] = user
 
         if not self._ldap_bind():
             return RetVal(action_result.set_status(phantom.APP_ERROR))
@@ -259,14 +269,18 @@ class AdLdapConnector(BaseConnector):
                 self._ldap_connection,
                 user_dn=user_dn[user],
             )
+            ar_data["unlocked"] = True
         except Exception as e:
+            summary["summary"] = "Action failed"
+            ar_data["unlocked"] = False
             return RetVal(action_result.set_status(
                 phantom.APP_ERROR,
                 "",
                 exception=e
             ))
 
-        summary['summary'] = "Unlocked"
+        summary["summary"] = "Action succeeded"
+        action_result.add_data(ar_data)
         return RetVal(action_result.set_status(
             phantom.APP_SUCCESS
         ))

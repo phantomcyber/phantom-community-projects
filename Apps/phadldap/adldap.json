@@ -121,21 +121,21 @@
                     "data_type": "string",
                     "contains": [],
                     "column_name": "member",
-                    "column_order": 1
+                    "column_order": 0
                 },
                 {
                     "data_path": "action_result.data.*.function",
                     "data_type": "string",
                     "contains": [],
                     "column_name": "function",
-                    "column_order": 2
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.data.*.group",
                     "data_type": "string",
                     "contains": [],
                     "column_name": "group",
-                    "column_order": 3
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.summary",
@@ -310,19 +310,51 @@
                 }
             },
             "output": [
-                 {
-                    "data_path": "action_result.parameter.user",
+                {
+                    "data_path": "action_result.data.*.user_dn",
                     "data_type": "string",
                     "contains": [],
-                    "column_name": "target user",
+                    "column_name": "user dn",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.samaccountname",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "samaccountname",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.unlocked",
+                    "data_type": "boolean",
+                    "contains": [],
+                    "column_name": "Unlocked",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.use_samaccountname",
+                    "data_type": "boolean",
+                    "contains": []
                 },
                 {
                     "data_path": "action_result.summary",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "Summary",
-                    "column_order": 1
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.user",
+                    "data_type": "string",
+                    "contains": []
                 }
             ],
             "render": {
