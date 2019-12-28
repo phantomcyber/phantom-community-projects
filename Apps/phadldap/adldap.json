@@ -398,6 +398,35 @@
                     "contains": [],
                     "column_name": "target user",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.starting_status",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "started status",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.summary.account_status",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "current status",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.use_samaccountname",
+                    "data_type": "boolean",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "contains": []
                 }
             ],
             "render": {
@@ -435,12 +464,41 @@
                 }
             },
             "output": [
-                 {
+                {
                     "data_path": "action_result.parameter.user",
                     "data_type": "string",
                     "contains": [],
                     "column_name": "target user",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.starting_status",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "started status",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.summary.account_status",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "current status",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.use_samaccountname",
+                    "data_type": "boolean",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "contains": []
                 }
             ],
             "render": {
@@ -456,6 +514,16 @@
             "read_only": false,
             "versions": "EQ(*)",
             "parameters": {
+                "use_samaccountname": {
+                    "description": "Specify samaccountname instead of distinguishedname",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                },
                 "user": {
                     "description": "Specify the dn to enable",
                     "data_type": "string",
@@ -464,7 +532,7 @@
                     "contains": [],
                     "value_list": [],
                     "default": false,
-                    "order": 0
+                    "order": 1
                 },
                 "password": {
                     "description": "New password",
@@ -474,7 +542,7 @@
                     "contains": [],
                     "value_list": [],
                     "default": false,
-                    "order": 1
+                    "order": 2
                 }
             },
             "output": [
@@ -484,6 +552,48 @@
                     "contains": [],
                     "column_name": "target user",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.reset",
+                    "data_type": "boolean",
+                    "contains": [],
+                    "column_name": "Was Reset",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.user_dn",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.data.*.samaccountname",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.password",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.parameter.use_samaccountname",
+                    "data_type": "boolean",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "contains": []
                 }
             ],
             "render": {
@@ -522,11 +632,43 @@
             },
             "output": [
                  {
-                    "data_path": "action_result.parameter.user",
+                    "data_path": "action_result.parameter.object",
                     "data_type": "string",
                     "contains": [],
-                    "column_name": "target user",
+                    "column_name": "object",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.new_ou",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "destination",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.summary.moved",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.data.*.source_object",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.data.*.destination_container",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "contains": []
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "contains": []
                 }
             ],
             "render": {
@@ -534,8 +676,8 @@
             }
         },
         {
-            "action": "query",
-            "identifier": "query",
+            "action": "run query",
+            "identifier": "run_query",
             "description": "Query Active Directory LDAP",
             "verbose": "This action flexibly supports querying Active Directory using LDAP syntax. This app has some features making it specific to Active Directory.",
             "type": "investigate",
@@ -575,23 +717,17 @@
                 {
                     "data_path": "action_result.parameter.filter",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "filter",
-                    "column_order": 0
+                    "contains": []
                 },
                 {
                     "data_path": "action_result.parameter.search_base",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "search_base",
-                    "column_order": 1
+                    "contains": []
                 },
                 {
-                    "data_path": "action_result.parameter.search_base",
+                    "data_path": "action_result.parameter.attributes",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "search_base",
-                    "column_order": 2
+                    "contains": []
                 },
                 {
                     "data_path": "action_result.status",
@@ -604,12 +740,12 @@
                     "data_type": "string"
                 },
                 {
-                    "data_path": "summary.total_objects",
+                    "data_path": "action_result.summary.total_objects",
                     "data_type": "numeric"
                 },
                 {
-                    "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric"
+                    "data_path": "action_result.data.attributes.*",
+                    "data_type": "string"
                 }
             ],
             "render": {

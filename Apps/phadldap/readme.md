@@ -15,6 +15,7 @@ This page is intended to serve as a _living_ document for this app with plently 
 - [App Information](#app-information)
 - [App Configuration](#app-configuration)
 - [Actions](#actions)
+    - [Run Query](#run-query)
     - [Add group member](#add-group-member)
     - [Remove group member](#remove-group-member)
     - [Get Attribute](#get-attribute)
@@ -24,7 +25,6 @@ This page is intended to serve as a _living_ document for this app with plently 
     - [Unlock Account](#unlock-account)
     - [Reset Password](#reset-password)
     - [Move Object](#move-object)
-    - [Query](#query)
 
 ## App Information
 This LDAP application utilizes the [LDAP3](https://ldap3.readthedocs.io/) library for Python. This was chosen, in part, due to the pythonic design of the library and the quality of the documentation.
@@ -45,7 +45,28 @@ Second: If you find yourself NOT using SSL, then you should take a good, hard lo
 (As an aside: My recommendation as a security professional is to disallow insecure (plaintext AND unsigned binds) if at all possible ([ref](#references): 1, 2, 3))
 
 ## Actions
-### Add Group Member
+### Run Query
+One of the things I had been missing from the original Phantom LDAP application was a _generic_ query command capability. This app has implemented such functionality that will be demonstrated presently.
+
+*Note: This command is useful for those who are familiar with LDAP syntax.*
+
+Imagine you've run the following query:  
+`(|(mail=*)(samaccountname=*admin*))`
+
+![](.docs/run_query_action.png)
+
+The effectively says: "If the mail attribute is present or samaccountname matches '\*admin\*', return results. Also in the screenshot above, I have omitted the searchbase which, in this app, means the root dn will be found and used (see `_get_root_dn()` for implementation details). Finally, we name the following attributes to be gathered:  
+
+`samaccountname;mail;userprincipalname;distinguishedname` (Note: semi-colon separated)
+
+In my lab, I got the following results:
+
+![](.docs/run_query_result.png)
+
+Note that the UI has a custom renderer to show all the attributes requested. 
+
+#### Important Notes for 'Run Query':
+Because the Phantom architecture requires the resulting values in the data path to be coded during app-development, the attributes dynamically requested cannot be defined in the json file. Consequently, they are not available when using the VPE. Instead, you must plug in the attribute by name. For example:
 
 
 
