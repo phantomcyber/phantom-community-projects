@@ -715,25 +715,24 @@
             },
             "output": [
                 {
+                    "data_path": "action_result.data.*.entries.*.attributes",
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.parameter.filter",
-                    "data_type": "string",
-                    "contains": []
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.parameter.search_base",
-                    "data_type": "string",
-                    "contains": []
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.parameter.attributes",
-                    "data_type": "string",
-                    "contains": []
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 3
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
@@ -742,10 +741,6 @@
                 {
                     "data_path": "action_result.summary.total_objects",
                     "data_type": "numeric"
-                },
-                {
-                    "data_path": "action_result.data.attributes.*",
-                    "data_type": "string"
                 }
             ],
             "render": {

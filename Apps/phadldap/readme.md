@@ -46,7 +46,7 @@ Second: If you find yourself NOT using SSL, then you should take a good, hard lo
 
 ## Actions
 ### Run Query
-One of the things I had been missing from the original Phantom LDAP application was a _generic_ query command capability. This app has implemented such functionality that will be demonstrated presently.
+One of the things I had been missing from the original Phantom LDAP application was a _generic_ query command. This app has implemented such functionality which will be demonstrated presently.
 
 *Note: This command is useful for those who are familiar with LDAP syntax.*
 
@@ -66,9 +66,35 @@ In my lab, I got the following results:
 Note that the UI has a custom renderer to show all the attributes requested. 
 
 #### Important Notes for 'Run Query':
-Because the Phantom architecture requires the resulting values in the data path to be coded during app-development, the attributes dynamically requested cannot be defined in the json file. Consequently, they are not available when using the VPE. Instead, you must plug in the attribute by name. For example:
+Because the Phantom architecture requires the resulting values in the data path to be coded during app-development, the attributes dynamically requested cannot be defined in the json file. Consequently, they are not available when using the VPE. Instead, you must plug in the attribute by name. For an arbitrary example, imagine you have a playbook that periodically runs looking for users who *do* have a `manager` assigned but do *not* have a `mail` attribute assign. We might set up a playbook like this:
 
+![](.docs/run_query_playbook.png)
 
+We might set our LDAP params like the following. Note that the query I'm using in this example is: `(&(manager=*)(!(mail=*)))`. This can be thought of as:
+- AND
+    - manager must exist
+    - NOT
+        - mail must exist
+
+Or more plainly: "manager attribute must be populated and the mail attribute must not."
+
+![](.docs/run_query_ldap_params.png)
+
+Now we can format the response in preperation for adding a note.
+
+![](.docs/run_query_format_params.png)
+
+In the above screenshot, you see that there is a datapath available for selection called `get_users_with_no_mail:action_result.data.*.entries.*.attributes` (circled in red). However, the attributes we selected in the LDAP Query block (samaccountname;mail;manager) are not see in the UI. Therefore, you must type the attribute name in as I have done in the second, bottom circled section (where I've added ".manager").  Interestingly, Active Directory returns those with Microsoft's internal mixed-case formatting - like samaccountname = sAMAccountName. This is difficult to remember when trying to select a field, so to reduce the friction with that, the App automatically lower-cases all attribute names.
+
+Finally, we just call the API action to add a note using the output of our format block and run the playbook. (NOTE: For the astute amongst you that noticed an inconsistency between screenshots - I removed the `mail` attribute for this demo... So, the screenshots aren't lying, the truth changed.)
+
+![](.docs/run_query_playbook_run.png)
+
+And we can see the users were found and added to a note.
+
+![](.docs/run_query_added_note.png).
+
+Of course, the output of `run query` could easily be used as input to many other AD LDAP actions or actions of other Apps.
 
 # References
 1. https://blogs.technet.microsoft.com/russellt/2016/01/13/identifying-clear-text-ldap-binds-to-your-dcs/

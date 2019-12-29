@@ -519,11 +519,16 @@ class AdLdapConnector(BaseConnector):
                 "",
                 e
             ))
+        out_data = json.loads(resp)
 
-        action_result.add_data(
-            json.loads(
-                resp
-            ))
+        # unify the attributes returned from AD to lowercase keys
+        for i, _ in enumerate(out_data['entries']):
+            out_data['entries'][i]['attributes'] = {
+                k.lower(): v
+                for k, v in out_data['entries'][i]['attributes'].items()
+            }
+        self.debug_print("[DEBUG] out_data = {}".format(out_data))
+        action_result.add_data(out_data)
 
         # Add a dictionary that is made up of the most important values from data into the summary
         summary['total_objects'] = len(self._get_filtered_response())
