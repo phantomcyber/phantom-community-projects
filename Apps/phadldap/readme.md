@@ -16,8 +16,8 @@ This page is intended to serve as a _living_ document for this app with plently 
 - [App Configuration](#app-configuration)
 - [Actions](#actions)
     - [Run Query](#run-query)
-    - [Add group member](#add-group-member)
-    - [Remove group member](#remove-group-member)
+    - [Add group members](#add-group-members)
+    - [Remove group members](#remove-group-members)
     - [Get Attribute](#get-attribute)
     - [Set Attribute](#set-attribute)
     - [Disable Account](#disable-account)
@@ -95,6 +95,69 @@ And we can see the users were found and added to a note.
 ![](.docs/run_query_added_note.png).
 
 Of course, the output of `run query` could easily be used as input to many other AD LDAP actions or actions of other Apps.
+
+---
+
+### Add Group Members
+The `add group members` action allows for a many-to-many group modification. Specifically, any number of group members can be added to any number of groups. For example, consider the screenshot below.
+
+![](.docs/add_grpmem_action.png)
+
+Here, the users `robert` and `sam` will be added to the groups `splunk-admins` and `phantom-admins`. This is helpful in cases where certain actions might necessitate group additions (or removals) to multiple groups. Any number of situations might come to mind where this could be useful, for example a "no interactive logon" group used by a GPO and a "disable-sso" group tied to the single sign-on environment might be used during a phishing remediation. 
+
+Also, as is the goal with all actions of the "ADLDAP" App, we include the "use_samaccountname" parameter. This allows for the usage of sAMAccountName instead of distinguishedName attributes to reference objects in the directory. However:  
+*If you use this option, then both groups AND users must be a semi-colon separated list of samaccountnames*. Do not mix distinguishednames and samaccountnames, it will not work. 
+
+Another interesting point to note is that the `add/remove groups members` actions are not tied to _users_. Other Active Directory objects (such as computers) can also be added (and removed) from groups.
+
+Let's look at a quick, and relatively contrived, example of using the `add group members` command. Imagine we have a lab and have just spun up a new analytics group. These people have the 'analytics' department attribute set in Active Directory and we want to add them to the 'lab-employees' and the 'splunk-analysts' group. However, we only want to add people with the 'analytics' department. Here is a screenshot of our starting scenario:
+
+![](.docs/add_grpmem_ad_pre.png)
+
+You can see that the folks in the Analytics group are neither in the 'splunk-analysts' group nor the 'lab-employees' group. So we'll write a little playbook with the `run query` action and the `add group members` to set this right. One important thing to know is that the first playbook below is the _easiest_ way to implement the logic but is not optimized for performance. I will cover that in the [Important Notes](#Important-notes-for-add/remove-group-members) section below.
+
+The playbook looks like the following:  
+![](.docs/add_grpmem_playbook_nonoptimal.png)
+
+The first block is our query block. You can read about this more generally in the ![](#run-query) section, but the settings here are as follows. Note that our LDAP query is `(department=analytics)`. 
+
+![](.docs/add_grpmem_ldap_query.png)
+
+This block can directly be connected to the `add group members` block and configured thusly:
+
+![](.docs/add_grpmem_add_nonopt.png)
+
+This command will make several things available to the data path, including all of the attributes you requested (in this case, just 'samaccountname') - but they (the selected attributes) will not be availble to select in the UI due to reasons covered in the ![run query](#run-query) section, so we'll have to type those in here. In the screenshot above, you can see that I have appended ".samaccountname" to the selected attribute of `run_query_1:action_result.data.*.entries.*.attributes` to make `run_query_1:action_result.data.*.entries.*.attributes.samaccountname`, which was used as the input to `members` field. You can also see that the groups to which the users will be added are `splunk-analysts` and `lab-employees` (separated by a semi-colon). 
+
+When this is run, the output displays the distinguishedNames and function (add or remove) of the user. The following screenshot is an example:
+
+![](.docs/add_grpmem_action_ui.png)
+
+
+#### Important Notes for Add/Remove Group Members
+One important note regarding this (and `remove group members`) action is around optimization. The previous example set-up works just fine and can be used without issue. However, because the `add group members` block is connected directly to the `run query` block, the `add group members` block will be called once for each result returned by `run query`. So, if a large number of results are returned, then Domain Controller is going to be hit once for each user instead of a single connection doing all the work. 
+
+How to optimize? Well, the `add group members` block is built to support any number of users being passed in and then it will only connect to the directory once for all of them - much faster. The set-up for this is actually only slightly more complicated than the one above. It only adds a single format block and will look something like this:
+
+![](.docs/add_grpmem_playbook_optimal.png)
+
+This format block is configured like this:
+
+![](.docs/add_grpmem_format.png)
+
+The top red square shows the required formatting for looping (see documentation). The format is as follows:
+```
+%%
+{0};
+%%
+```
+
+The second red block shows input to the format block being the fully populated attribute: `run_query_1:action_result.data.*.entries.*.attributes.samaccountname`.
+
+What this will do is construct a string (instead of a list) for input in the `add group members` block. That will allow the block to optimize it's connection to the directory and do all the group adjustments with a single bind operation.
+
+Ultimately, this is the recommended technique for performance but ultimately, the design choices are yours.
+
 
 # References
 1. https://blogs.technet.microsoft.com/russellt/2016/01/13/identifying-clear-text-ldap-binds-to-your-dcs/

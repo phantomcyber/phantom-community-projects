@@ -679,7 +679,7 @@
             "action": "run query",
             "identifier": "run_query",
             "description": "Query Active Directory LDAP",
-            "verbose": "This action flexibly supports querying Active Directory using LDAP syntax. This app has some features making it specific to Active Directory.",
+            "verbose": "This action flexibly supports querying Active Directory using LDAP syntax.",
             "type": "investigate",
             "read_only": true,
             "parameters": {
@@ -704,7 +704,7 @@
                     "order": 1
                 },
                 "attributes": {
-                    "description": "Comma separated list of attributes to collect.",
+                    "description": "Semi-colon separated list of attributes to collect (e.g. samaccountname;mail).",
                     "data_type": "string",
                     "required": true,
                     "primary": false,
