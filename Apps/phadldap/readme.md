@@ -127,7 +127,7 @@ This block can directly be connected to the `add group members` block and config
 
 ![](.docs/add_grpmem_add_nonopt.png)
 
-This command will make several things available to the data path, including all of the attributes you requested (in this case, just 'samaccountname') - but they (the selected attributes) will not be availble to select in the UI due to reasons covered in the ![run query](#run-query) section, so we'll have to type those in here. In the screenshot above, you can see that I have appended ".samaccountname" to the selected attribute of `run_query_1:action_result.data.*.entries.*.attributes` to make `run_query_1:action_result.data.*.entries.*.attributes.samaccountname`, which was used as the input to `members` field. You can also see that the groups to which the users will be added are `splunk-analysts` and `lab-employees` (separated by a semi-colon). 
+This command will make several things available to the data path, including all of the attributes you requested (in this case, just 'samaccountname') - but they (the selected attributes) will not be availble to select in the UI due to reasons covered in the [run query](#run-query) section, so we'll have to type those in here. In the screenshot above, you can see that I have appended ".samaccountname" to the selected attribute of `run_query_1:action_result.data.*.entries.*.attributes` to make `run_query_1:action_result.data.*.entries.*.attributes.samaccountname`, which was used as the input to `members` field. You can also see that the groups to which the users will be added are `splunk-analysts` and `lab-employees` (separated by a semi-colon). 
 
 When this is run, the output displays the distinguishedNames and function (add or remove) of the user. The following screenshot is an example:
 
@@ -212,7 +212,7 @@ Now when I run the same playbook, the second prompt gives me just the action I s
 
 ![](.docs/get_attributes_prompt2_attr.png)
 
-The individual attributes are not able to be selected in the VPE due to the reasons specified [here](#-Important-Notes-for-Run-Query). So just like `run query`, you will have to specify the ones you want by appending the attribute name to the parameter.
+The individual attributes are not able to be selected in the VPE due to the reasons specified [here](#Important-Notes-for-Run-Query). So just like `run query`, you will have to specify the ones you want by appending the attribute name to the parameter.
 
 
 # References
