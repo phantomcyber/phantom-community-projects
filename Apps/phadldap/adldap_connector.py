@@ -418,10 +418,7 @@ class AdLdapConnector(BaseConnector):
             query += "(userprincipalname={0})(samaccountname={0})(distinguishedname={0})".format(i)
         query += ")"
 
-        self.debug_print("[DEBUG] handle_get_attributes, query = {}".format(query))
-
         resp = self._query({"filter": query, "attributes": param['attributes']})
-        self.debug_print("[DEBUG] handle_get_attributes, resp = {}".format(json.loads(resp)))
 
         action_result.add_data(json.loads(resp))
         summary['total_objects'] = len(self._get_filtered_response())

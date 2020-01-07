@@ -158,6 +158,62 @@ What this will do is construct a string (instead of a list) for input in the `ad
 
 Ultimately, this is the recommended technique for performance but ultimately, the design choices are yours.
 
+---
+
+### Remove Group Members
+
+TODO: See [Add Group Members](#add-group-members)
+
+---
+
+### Get Attributes
+The `get attributes` action is useful if you do not wish to specify a full LDAP query using the `run query` action but would rather just specify some objects and get their associated attributes back. This action solely works with AND logic. In other words, it will return any results found for all principals entered. 
+
+A deviation from the norm with this action is that we allow enter generic security principals instead of just distinguishedname or samaccountname. What does this mean for you? It means that you can enter any of:
+
+- samaccountname
+- userprincipalname
+- distinguishedname
+
+Additionally, you can "mix/match". For example you might enter: `sam;cn=user,ou=accounting,dc=company,dc=lab` and the system will split out `sam` and `cn=user,ou=accounting,dc=company,dc=lab` and run queries for both. This works because under the hood the following query is run:
+
+```
+for i in principal:
+    query += "(userprincipalname={0})(samaccountname={0})(distinguishedname={0})".format(i)
+query += ")"
+```
+
+This will find any of the three types mentioned.
+
+Let's look at a simple use-case for `get attributes`. In this example we are simply going to prompt a user to enter a principal from a prompt as well as some desired attributes.  We will retrieve them and then have another prompt to display what was found.  Of course this is a trivial example, but one can imagine using the command for context enrichment in an unlimited set of use-cases. 
+
+The playbook:
+![](.docs/get_attributes_playbook.png)
+
+When the first prompt fires, it asks the questions. See screenshot below:
+
+![](.docs/get_attributes_prompt1.png)
+
+And upon completing the prompt, `get attributes` fires, collects the data, and responds back:
+
+![](.docs/get_attributes_prompt2.png)
+
+In the screenshot above you may notice that what was returned was the full JSON object. This may not as useful to you as, say, specific attributes being returned by name. What's going on here?
+
+In the configuration for the second prompt, I had it configured thusly:
+
+![](.docs/get_attributes_prompt2_json.png)
+
+The fact that I was using `get_attribute_1:action_result.data.*.entries.*.attributes` and not specifying a _specific_ attribute means that it is going to return the entire structure back to me. Let's imagine I changed it to look like the following:
+
+![](.docs/get_attributes_prompt2_manager.png)
+
+Now when I run the same playbook, the second prompt gives me just the action I specified:
+
+![](.docs/get_attributes_prompt2_attr.png)
+
+The individual attributes are not able to be selected in the VPE due to the reasons specified [here](#-Important-Notes-for-Run-Query). So just like `run query`, you will have to specify the ones you want by appending the attribute name to the parameter.
+
 
 # References
 1. https://blogs.technet.microsoft.com/russellt/2016/01/13/identifying-clear-text-ldap-binds-to-your-dcs/
