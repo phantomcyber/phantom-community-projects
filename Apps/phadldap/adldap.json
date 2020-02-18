@@ -10,17 +10,21 @@
     "product_version_regex": ".*",
     "publisher": "Splunk",
     "license": "Copyright (c) Splunk, 2019",
-    "app_version": "1.0.0",
+    "app_version": "1.0.1",
     "utctime_updated": "2019-10-27T05:06:05.140684Z",
     "package_name": "phantom_adldap",
     "main_module": "adldap_connector.pyc",
     "min_phantom_version": "4.6.18265",
-    "app_wizard_version": "1.0.0",
+    "app_wizard_version": "1.0.1",
     "pip_dependencies": {
         "wheel": [
             {
                 "module": "ldap3",
                 "input_file": "wheels/ldap3-2.6.1-py2.py3-none-any.whl"
+            },
+            {
+                "module": "pyasn1",
+                "input_file": "wheels/pyasn1-0.4.7-py2.py3-none-any.whl"
             }
         ]
     },
