@@ -90,7 +90,6 @@ def import_playbooks(confirm, files, creds, endpoint, repo, force):
 def main():
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     args = get_arguments()
-    print(args)
     files = get_playbook_list(args.directory)
 
     if(len(files) == 0):
