@@ -1,0 +1,253 @@
+{
+    "appid": "c155fd54-df90-414d-92ab-e7801d36fb33",
+    "name": "AutomationGames",
+    "description": "Version 2 - AutomationGames App",
+    "type": "siem",
+    "product_vendor": "Splunk>Phantom Team",
+    "logo": "automationgames.png",
+    "logo_dark": "automationgames.png",
+    "product_name": "AutomationGames",
+    "product_version_regex": ".*",
+    "publisher": "Splunk Phantom Community",
+    "license": "Copyright (c) Splunk, 2020",
+    "app_version": "1.2.0",
+    "utctime_updated": "2020-01-13T00:42:39.330097Z",
+    "package_name": "phantom_automationgames",
+    "main_module": "automationgames_connector.pyc",
+    "min_phantom_version": "4.6.18265",
+    "app_wizard_version": "1.0.0",
+    "python_version": "2.7",
+    "configuration": {
+        "base_url": {
+            "description": "AutomationGames URL",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "",
+            "order": 1
+        },
+        "api_key": {
+            "description": "API Keys to AutomationGames Server",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "",
+            "order": 0
+        }
+    },
+    "actions": [
+        {
+            "action": "test connectivity",
+            "identifier": "test_connectivity",
+            "description": "Validate the asset configuration for connectivity using supplied configuration",
+            "verbose": "",
+            "type": "test",
+            "read_only": true,
+            "parameters": {},
+            "output": [],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "on poll",
+            "identifier": "on_poll",
+            "description": "Callback action for the on_poll ingest functionality",
+            "verbose": "",
+            "type": "ingest",
+            "read_only": true,
+            "parameters": {},
+            "output": [],
+            "versions": "EQ(*)",
+            "render": {
+                "type": "generic"
+            }
+        },
+        {
+            "action": "post answer",
+            "identifier": "post_answer",
+            "description": "Post Answer to API",
+            "verbose": "Post your answers to this endpoint. JSON format.",
+            "type": "generic",
+            "read_only": false,
+            "lock": {
+                "enabled": false
+            },
+            "parameters": {
+                "answer": {
+                    "description": "The answer to the question",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "value_list": [],
+                    "default": "",
+                    "order": 0
+                },
+                "r_id": {
+                    "description": "The question ID. You should post back the container source_data_identifer which is treated as the 'question id'",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "value_list": [],
+                    "default": "",
+                    "order": 1
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.answer",
+                    "data_type": "string",
+                    "column_name": "answer",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.r_id",
+                    "data_type": "string",
+                    "column_name": "r_id",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.points",
+                    "data_type": "numeric",
+                    "column_name": "points",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.data.*.status",
+                    "data_type": "string",
+                    "column_name": "attempt status",
+                    "column_order": 4                 
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                }
+            ],
+            "versions": "EQ(*)",
+            "render": {
+                "type": "table"
+            }
+        },
+        {
+            "action": "perform math",
+            "identifier": "perform_math",
+            "description": "Basic mathematical operations",
+            "verbose": "Perform some basic mathematic operations.",
+            "type": "generic",
+            "read_only": false,
+            "lock": {
+                "enabled": false
+            },
+            "parameters": {
+                "num1": {
+                    "description": "The first number.",
+                    "data_type": "numeric",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0
+                },
+                "operation": {
+                    "description": "The operation.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [
+                        "-",
+                        "+",
+                        "*",
+                        "/",
+                        "^"
+                    ],
+                    "default": "+",
+                    "order": 1
+                },
+                "num2": {
+                    "description": "The second number.",
+                    "data_type": "numeric",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.num1",
+                    "data_type": "numeric",
+                    "contains": [],
+                    "column_name": "first number",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.operation",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "operation",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.parameter.num2",
+                    "data_type": "numeric",
+                    "contains": [],
+                    "column_name": "second number",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.answer",
+                    "data_type": "numeric",
+                    "contains": [],
+                    "column_name": "answer",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        }
+    ]
+}
