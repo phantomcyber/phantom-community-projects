@@ -1,4 +1,3 @@
-  
 # File: athena_connector.py
 # Copyright (c) 2017-2019 Splunk Inc.
 #
