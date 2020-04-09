@@ -43,11 +43,11 @@ The configuration of the Zoom App for Phantom requires three fields **API Key** 
 ### Actions
 Actions are all fairly simple and documented with the normal app documentation process, for details please install the app and review the documentation at your leisure. That said, one of the main purposes of this app was to provide additional context about meetings that can only be provided via the Zoom API, most notably whether or not the meetings are being password protected.
 
-The two actions that provide information on the configuration of passwords on meetings are **get meeting** and **get meeting invite**. Get meeting should be invoke when a "meeting.started" event is ingested from Phantom. The **get meeting** API call provides tons of detail, but will only successfully run against currently in-flight meetings. Further details on how to ingest and act on Zoom events are provided [here](#ingesting-zoom-alerts)
+The two actions that provide information on the configuration of passwords on meetings are **get meeting** and **get meeting invite**. Get meeting should be invoke when a "meeting.started" event is ingested from Phantom. The **get meeting** API call provides tons of detail, but will only successfully run against currently in-flight meetings. Further details on how to ingest and act on Zoom events are provided [here](#app-configuration-phantom-side)
 
 **get meeting invite** should be invoked when the "meeting.created" event  is ingested by phantom. This command call the meeting invite API endpoint and parses the relevant details from in, namely the password, if there is one. 
 
-These two actions will give you date that can be used to gain insight into who is running unprotected meetings, how often, and what are the topics of those meetings.
+These two actions will give you data that can be used to gain insight into who is running unprotected meetings, how often, and what are the topics of those meetings.
 
 ## **Updated** Splunk App for Phantom
 
