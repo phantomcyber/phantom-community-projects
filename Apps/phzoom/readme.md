@@ -20,7 +20,12 @@ This project is broken into several parts:
     - [Update Details](#update-details)
     - [Configuring the on poll query and related fields](#configuring-the-on-poll-query-and-related-fields)
   - [Playbooks](#playbooks)
+    - [Where to find them](#where-to-find-them)
+    - [How to install](#how-to-install)
+    - [About](#about)
   - [Splunk Add-on for Zoom Enrichment](#splunk-add-on-for-zoom-enrichment)
+    - [Where to find them](#where-to-find-them-1)
+    - [How to install](#how-to-install-1)
   - [Sample queries](#sample-queries)
 
 ## Zoom App for Phantom
@@ -74,6 +79,16 @@ The fields required for configuration are as follows:
   - We recommend using the meeting topic and time by using these two fields: `topic, _time`
 
 ## Playbooks
+
+### Where to find them
+
+The playbooks associated with this project can be found [here](../../playbooks/Zoom_Enrichment_Use_Case)
+
+### How to install
+
+This app can be installed in Splunk by going to "Manage Apps" and then "Install app from file."
+
+### About
 Currently, four playbooks are provided to demonstrate the functionality provided by the Zoom App and updated Splunk App. You may find these useful, but it is recommended you modify them before putting them insto production:
 
 1. Zoom Router
@@ -110,7 +125,15 @@ Currently, four playbooks are provided to demonstrate the functionality provided
 
 ## Splunk Add-on for Zoom Enrichment
 
-This app is disigned to provide kvstores for zoom enrichment data provided by phantom.
+### Where to find them
+
+The Splunk Add-on for Zoom Enrichment app can be found [here](../../Splunk_Apps/Zoom_Enrichment_Use_Case/)
+
+### How to install
+
+The Playbooks provided with this project can be installed by downloading the "*.tgz" files, navigating to the "playbooks" screen in Phantom, and then clicking the "Import Playbook" button. There is no need to unzip these fields.
+
+This app is designed to provide kvstores for zoom enrichment data provided by phantom.
 
 1. zoom_meeting_details
    - Used to store rich details about Zoom meetings. Can only be populated while a meeting is actively in session.
@@ -132,8 +155,8 @@ Finding meetings that took place, or are in progess that had no password applied
 - `index=<your index> sourcetype="zoom:webhook" event="meeting.started" | lookup zoom_meeting_details id as payload.object.id | search NOT(encrypted_password=*)`
 
 Finding meetings that are scheduled, but have no password:
-- `sourcetype="zoom:webhook" event="meeting.created" payload.object.start_time=* | lookup zoom_meeting_invites meeting_id as payload.object.id | search NOT(password=*)`
+- `index=<your index> sourcetype="zoom:webhook" event="meeting.created" payload.object.start_time=* | lookup zoom_meeting_invites meeting_id as payload.object.id | search NOT(password=*)`
 
 Finding users that do not have passwords required and/or do not require waiting room functionality
-- `sourcetype="zoom:webhook" event="meeting.started" | lookup zoom_user_settings user_id as payload.object.host_id | search (schedule_meeting_require_password_for_scheduling_new_meetings=0 OR schedule_meeting_require_password_for_instant_meetings=0 OR schedule_meeting_require_password_for_pmi_meetings="none" OR in_meeting_waiting_room="0")`
+- `index=<your index> sourcetype="zoom:webhook" event="meeting.started" | lookup zoom_user_settings user_id as payload.object.host_id | search (schedule_meeting_require_password_for_scheduling_new_meetings=0 OR schedule_meeting_require_password_for_instant_meetings=0 OR schedule_meeting_require_password_for_pmi_meetings="none" OR in_meeting_waiting_room="0")`
 
