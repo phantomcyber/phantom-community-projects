@@ -1,6 +1,6 @@
 # Mac stuff
 .DS_Store
-*.tgz
+
 .idea/
 # Byte-compiled / optimized / DLL files
 __pycache__/
