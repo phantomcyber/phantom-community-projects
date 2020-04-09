@@ -4,10 +4,24 @@
 
 This project was created in response to a marked increase in work from home employees, which has inevitably led to a significant rise in Zoom usage. The objective of this project is to supplement log data provided by Zoom webhooks with important additional context (e.g., was the meeting password protected, was waiting room turned on). Additionally, we wanted to provide security practitioners a way to proactively ensure that security best practices are being followed with regards to Zoom meetings.
 
+## High Level Overview
+
+This project is predicated on the fact that Zoom logs are already being ingested into Splunk by way of JWT Webhooks. The process flow from there is as follows:
+
+- Ingest Zoom meeting logs into Phantom by way of "polling" action.
+- Enrich Zoom meeting and user log data with the Zoom App for Phantom.
+- Push enriched data back into Splunk kvstores for alert and dashboard integration.
+
+Additional capabilities:
+- Update Zoom user settings to adhere to your organization's Zoom best practices.
+- Update scheduled Zoom meetings to require a password.
+- Get file transfer transcripts from Zoom chat logs.
+
 ## The Documentation
 This project is broken into several parts:
 - [Zoom Automation Project](#zoom-automation-project)
   - [Objective](#objective)
+  - [High Level Overview](#high-level-overview)
   - [The Documentation](#the-documentation)
   - [Zoom App for Phantom](#zoom-app-for-phantom)
     - [Installing the App](#installing-the-app)
@@ -26,6 +40,7 @@ This project is broken into several parts:
   - [Splunk Add-on for Zoom Enrichment](#splunk-add-on-for-zoom-enrichment)
     - [Where to find them](#where-to-find-them-1)
     - [How to install](#how-to-install-1)
+    - [About](#about-1)
   - [Sample queries](#sample-queries)
 
 ## Zoom App for Phantom
@@ -132,6 +147,8 @@ The Splunk Add-on for Zoom Enrichment app can be found [here](../../Splunk_Apps/
 ### How to install
 
 The Playbooks provided with this project can be installed by downloading the "*.tgz" files, navigating to the "playbooks" screen in Phantom, and then clicking the "Import Playbook" button. There is no need to unzip these fields.
+
+### About
 
 This app is designed to provide kvstores for zoom enrichment data provided by phantom.
 
