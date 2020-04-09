@@ -6,18 +6,28 @@ This project was created in response to a marked increase in work from home empl
 
 ## The Documentation
 This project is broken into several parts:
-1. [Zoom App for Phantom](#zoom-app-for-phantom)
-   - This provides automation capabilities for enriching Zoom log data as well as responding to unprotected Zoom meetings.
-2. [Updated Splunk App for Phantom](#updated-splunk-app-for-phantom)
-   - This app has been updated to provide key functionality to support the processes described in this documents. Specifically, the ability to modify kv stores via Phantom.
-3. [Phantom Playbooks](#playbooks)
-   - These playbooks have been created to demonstrate how Phantom can be leveraged in this context. They are meant to be modified to suit your organization's needs.
-4. [Splunk Add-on for Zoom Enrichment](#splunk-add-on-for-zoom-enrichment)
-   - This provides a number of kv store lookups used to store enrichment data retrieved by Phantom.
-5. [Sample Splunk Queries](#sample-queries)
-   - These includes recommended polling queries for ingesting Zoom data from Splunk to Phantom as well as some example queries of how to use the enrichment data.
+- [Zoom Automation Project](#zoom-automation-project)
+  - [Objective](#objective)
+  - [The Documentation](#the-documentation)
+  - [Zoom App for Phantom](#zoom-app-for-phantom)
+    - [Installing the App](#installing-the-app)
+    - [App Configurations (Zoom Side)](#app-configurations-zoom-side)
+    - [App Configuration (Phantom Side)](#app-configuration-phantom-side)
+    - [Actions](#actions)
+  - [**Updated** Splunk App for Phantom](#updated-splunk-app-for-phantom)
+    - [Where to find it](#where-to-find-it)
+    - [Installing the App](#installing-the-app-1)
+    - [Update Details](#update-details)
+    - [Configuring the on poll query and related fields](#configuring-the-on-poll-query-and-related-fields)
+  - [Playbooks](#playbooks)
+  - [Splunk Add-on for Zoom Enrichment](#splunk-add-on-for-zoom-enrichment)
+  - [Sample queries](#sample-queries)
 
 ## Zoom App for Phantom
+
+### Installing the App
+
+In the `compiled_app` directory there is a ready to install version of this app. Just download it and click "Install App" on the Phantom Apps page.
 
 ### App Configurations (Zoom Side)
 For the Zoom app for Phantom to be configured correctly, you must first create a JWT App in the your Zoom App Marketplace account. A JWT App can be created by going [here](https://marketplace.zoom.us/develop/create) and clicking the "Create" button under the "JWT" app type. Once you've created your JWT app you'll be provided with an **API Key** and and **API Secret**, keep track of these. They will be necessary for the configuration on Phantom side.
@@ -35,6 +45,14 @@ The two actions that provide information on the configuration of passwords on me
 These two actions will give you date that can be used to gain insight into who is running unprotected meetings, how often, and what are the topics of those meetings.
 
 ## **Updated** Splunk App for Phantom
+
+### Where to find it
+
+You can find the Update Splunk app [here](../splunk)
+
+### Installing the App
+
+In the `compiled_app` directory there is a ready to install version of this app. Just download it and click "Install App" on the Phantom Apps page.
 
 ### Update Details
 This updated Splunk App for Phantom will allow you to add (**add kvstore data**) and remove (**remove kvstore data**) data from existing KV stores in Splunk. The playbooks provided as part of this project leverage these actions to bring the enrichment data from the **get meeting** and **get meeting invite** actions back to Splunk.
@@ -58,7 +76,11 @@ The fields required for configuration are as follows:
 ## Playbooks
 Currently, four playbooks are provided to demonstrate the functionality provided by the Zoom App and updated Splunk App. You may find these useful, but it is recommended you modify them before putting them insto production:
 
-1. Zoom Meeting Enrichment
+1. Zoom Router
+   - This playbook is designed to route meeting records from Splunk to the correct playbook.
+     - Meeting.created goes to Zoom Scheduled Meeting Enrichment playbook
+     - Meeting.started goes to Zoom Meeting Enrichment playbook
+2. Zoom Meeting Enrichment
    - This playbook is designed to respond to ingested meeting.started. It will get the information from the in-flight meeting, get information about those host of that meeting, and send the meeting details to the zoom_meeting_details kvstore provided in the Splunk Add-on for Zoom Enrichment
    - Additionally, if it is discovered that no password set on the meeting, an educational email will be sent to the meeting host informing them of the risks of unprotected Zoom meetings.
    - Finally, a step that will update the meeting host's settings to require passwords on all meeting types and require waiting rooms.
@@ -66,7 +88,7 @@ Currently, four playbooks are provided to demonstrate the functionality provided
      - Review the email message and customize it to what you want.
      - Decide if you really want to update user settings, and if so, make sure you're comfortable with each of the applicable settings to the action. Additionally, you may want to include information about modified user settings to your message to the meeting host.
      - Make sure the `from address` of the `send email` action has your desired email address.
-2. Zoom Scheduled Meeting Enrichment
+3. Zoom Scheduled Meeting Enrichment
    - This playbook is designed to respond to ingested meeting.created events with a future start_time (i.e., future meetings). It will get the meeting invite for the meeting, get information about the host of the meeting, and send the meeting invite details to the zoom_meeting_invites kvstore provided by the Splunk Add-on for Zoom Enrichment.
    - Additionally, if it is discovered that no password is set on the meeting, the meeting will be updated with a password, and an education email will be sento the meeting host informing them of the change and the risk of unprotected Zoom meetings.
    - Note: The `get meeting info` action will not run against future scheduled meetings, however the `get meeting invite` action can be used. This gives less information than `get meeting info` but it *does* provide enough information to determine if a password has been set on the meeting.
@@ -74,13 +96,13 @@ Currently, four playbooks are provided to demonstrate the functionality provided
      - Review the email message and customize it to what you want.
      - Decide if you really enforce a password on the scheduled meeting. If not, you may want to modify the meeting_host notification message.
      - Make sure the `from address` of the `send email` action has your desired email address.
-3. Zoom User Enrichment
+4. Zoom User Enrichment
    - This playbook is designed to enrich zoom user data - likely user host (if you're using the same ingestion queries we recommended, the user_id will be the `host_id` from the ingested events). This will get general user information (e.g., user email, timezone, etc.) as well as user settings (e.g., require password on newly scheduled meetings), it will also update the kvstores zoom_user_details and zoom_user_settings provided by the Splunk Add-on for Zoom Enrichment.
    - Additionally, if it is discovered that passwords and/or waiting rooms are not enabled on the user account in question, it will send an educational email to the user informing them of the risks of unprotected zoom meetings.
    - Modification Recommendations:
      - Review the email message and customize it to what you want.
      - Make sure the `from address` of the `send email` action has your desired email address.
-4. Zoom Meeting Post Mortem
+5. Zoom Meeting Post Mortem
    - This playbook is designed to get information on files transferred in Zoom chat during the course of an ended meeting. It will send this information to the zoom_meeting_files kvstore provided by the Splunk Add-on for Zoom Enrichment.
    - Note: Files are only available for 24 hours after a meeting ends.
    - Modification Recommendations:
