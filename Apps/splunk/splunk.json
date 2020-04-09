@@ -1,0 +1,1000 @@
+{
+    "appid": "91883aa8-9c81-470b-97a1-5d8f7995f560",
+    "name": "Splunk",
+    "description": "This app integrates with Splunk to update data on the device, in addition to investigate and ingestion actions",
+    "publisher": "Splunk",
+    "type": "siem",
+    "main_module": "splunk_connector.py",
+    "app_version": "2.0.7",
+    "utctime_updated": "2020-02-24T22:32:30.000000Z",
+    "package_name": "phantom_splunk",
+    "product_name": "Splunk Enterprise",
+    "product_vendor": "Splunk Inc.",
+    "product_version_regex": ".*",
+    "min_phantom_version": "4.6.19142",
+    "python_version": "3",
+    "latest_tested_versions": [
+        "On-premise, Splunk Enterprise Security v7.3.0"
+    ],
+    "logo": "logo_splunk.svg",
+    "logo_dark": "logo_splunk_dark.svg",
+    "license": "Copyright (c) 2014-2020 Splunk Inc.",
+    "pip_dependencies": {
+        "wheel": [
+            {
+                "module": "splunk-sdk",
+                "input_file": "splunk_sdk_wheel/splunk_sdk-1.6.11-py3-none-any.whl"
+            }
+        ]
+    },
+    "configuration": {
+        "device": {
+            "description": "Device IP/Hostname",
+            "data_type": "string",
+            "order": 0,
+            "required": true
+        },
+        "port": {
+            "description": "Port",
+            "data_type": "numeric",
+            "order": 1,
+            "default": 8089
+        },
+        "username": {
+            "description": "Username",
+            "order": 2,
+            "data_type": "string"
+        },
+        "password": {
+            "description": "Password",
+            "order": 3,
+            "data_type": "password"
+        },
+        "splunk_owner": {
+            "description": "The owner context of the namespace",
+            "order": 4,
+            "data_type": "string"
+        },
+        "splunk_app": {
+            "description": "The app context of the namespace",
+            "order": 5,
+            "data_type": "string"
+        },
+        "timezone": {
+            "data_type": "timezone",
+            "order": 6,
+            "description": "Splunk Server Timezone",
+            "required": true
+        },
+        "verify_server_cert": {
+            "data_type": "boolean",
+            "order": 7,
+            "description": "Verify Server Certificate",
+            "default": false
+        },
+        "on_poll_command": {
+            "data_type": "string",
+            "order": 8,
+            "description": "Command for query to use with On Poll",
+            "required": false,
+            "value_list": [
+                "",
+                "search",
+                "eval",
+                "savedsearch",
+                "stats",
+                "table",
+                "tstats"
+            ]
+        },
+        "on_poll_query": {
+            "data_type": "string",
+            "order": 9,
+            "description": "Query to use with On Poll",
+            "required": false
+        },
+        "on_poll_display": {
+            "data_type": "string",
+            "order": 10,
+            "description": "Fields to save with On Poll",
+            "required": false
+        },
+        "on_poll_parse_only": {
+            "data_type": "boolean",
+            "order": 11,
+            "description": "Parse Only",
+            "default": true
+        },
+        "max_container": {
+            "data_type": "numeric",
+            "order": 12,
+            "description": "Max events to ingest (Default: 100)",
+            "required": false,
+            "default": 100
+        },
+        "container_name_prefix": {
+            "data_type": "string",
+            "order": 13,
+            "description": "Name to give containers created via ingestion",
+            "required": false
+        },
+        "container_name_values": {
+            "data_type": "string",
+            "order": 14,
+            "description": "Values to append to container name",
+            "required": false
+        },
+        "retry_count": {
+            "description": "Number of retries",
+            "data_type": "numeric",
+            "order": 15,
+            "default": 3,
+            "required": false
+        }
+    },
+    "actions": [
+        {
+            "action": "test connectivity",
+            "description": "Validate the asset configuration for connectivity. This action logs into the device to check the connection and credentials",
+            "type": "test",
+            "identifier": "test_asset_connectivity",
+            "read_only": true,
+            "parameters": {},
+            "output": [],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "get host events",
+            "description": "Get events pertaining to a host that have occurred in the last 'N' days",
+            "verbose": "<ul><li>The <b>last_n_days</b> parameter must be greater than 0</li><li>The action will search for the events of the hostname (provided in the 'ip_hostname' parameter) in the default index configured on the Splunk instance</li></ul>",
+            "type": "investigate",
+            "identifier": "get_host_events",
+            "read_only": true,
+            "parameters": {
+                "ip_hostname": {
+                    "description": "Hostname/IP to search the events of",
+                    "data_type": "string",
+                    "order": 0,
+                    "contains": [
+                        "ip",
+                        "host name"
+                    ],
+                    "required": true,
+                    "primary": true
+                },
+                "last_n_days": {
+                    "description": "Number of days ago",
+                    "data_type": "numeric",
+                    "order": 1,
+                    "required": false
+                }
+            },
+            "render": {
+                "type": "table",
+                "width": 12,
+                "height": 5,
+                "title": "Search Results"
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.ip_hostname",
+                    "data_type": "string",
+                    "contains": [
+                        "ip",
+                        "host name"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.last_n_days",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.data.*._bkt",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._cd",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._indextime",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._raw",
+                    "column_name": "Raw",
+                    "column_order": 2,
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._serial",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._si",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._sourcetype",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._time",
+                    "column_name": "Time",
+                    "column_order": 1,
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.host",
+                    "column_name": "Host",
+                    "column_order": 0,
+                    "data_type": "string",
+                    "contains": [
+                        "host name"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.index",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.linecount",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.source",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sourcetype",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.splunk_server",
+                    "data_type": "string",
+                    "contains": [
+                        "host name"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.total_events",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "on poll",
+            "description": "Ingest logs from the Splunk instance",
+            "verbose": "The configured query is what will be used during ingestion. If you only wish to show certain fields, then you can specify these as a comma-separated list in the configuration. If left unspecified, all available fields will be added to each artifact. When limiting the number of events to ingest, it will ingest the most recent events. By specifying the max count to 0, all events will be ingested.<br><br>",
+            "type": "ingest",
+            "identifier": "on_poll",
+            "read_only": true,
+            "parameters": {
+                "container_id": {
+                    "description": "Parameter ignored in this app",
+                    "data_type": "numeric"
+                },
+                "start_time": {
+                    "description": "Parameter ignored in this app",
+                    "data_type": "numeric"
+                },
+                "end_time": {
+                    "description": "Parameter ignored in this app",
+                    "data_type": "numeric"
+                },
+                "container_count": {
+                    "description": "Maximum number of events to query for",
+                    "data_type": "numeric",
+                    "default": 100
+                },
+                "artifact_count": {
+                    "description": "Parameter ignored in this app",
+                    "data_type": "numeric"
+                }
+            },
+            "output": [],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "add kvstore data",
+            "description": "Add data to kvstore",
+            "type": "generic",
+            "identifier": "add_kvstore_data",
+            "read_only": false,
+            "parameters": {
+                "app": {
+                    "description": "App",
+                    "data_type": "string",
+                    "order": 0,
+                    "required": true
+                },
+                "collection_name": {
+                    "description": "KV Store Collection Name",
+                    "data_type": "string",
+                    "order": 1,
+                    "required": true
+                },
+                "user": {
+                    "description": "User",
+                    "data_type": "string",
+                    "order": 2,
+                    "required": true,
+                    "default": "nobody"
+                },
+                "data": {
+                    "description": "Data to add (json formatted)",
+                    "data_type": "string",
+                    "order": 3,
+                    "required": true
+                }
+            },
+            "render": {
+                "type": "custom",
+                "width": 10,
+                "height": 5,
+                "view": "splunk_views.display_view",
+                "title": "Search Results"
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.app",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.collection_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.collection_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.data",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.user",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._key",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.total_events",
+                    "data_type": "numeric",
+                    "example_values": [
+                        2
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Total events: 2"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "delete kvstore data",
+            "description": "Add data to kvstore",
+            "type": "generic",
+            "identifier": "delete_kvstore_data",
+            "read_only": false,
+            "parameters": {
+                "app": {
+                    "description": "app",
+                    "data_type": "string",
+                    "order": 0,
+                    "required": true
+                },
+                "collection_name": {
+                    "description": "KV store collection name",
+                    "data_type": "string",
+                    "order": 1,
+                    "required": true
+                },
+                "user": {
+                    "description": "user",
+                    "data_type": "string",
+                    "order": 2,
+                    "required": true,
+                    "default": "nobody"
+                },
+                "key": {
+                    "description": "KV store record key",
+                    "data_type": "string",
+                    "order": 3,
+                    "required": true
+                }
+            },
+            "render": {
+                "type": "custom",
+                "width": 10,
+                "height": 5,
+                "view": "splunk_views.display_view",
+                "title": "Search Results"
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.app",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.collection_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.collection_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.key",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.user",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Total events: 2"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "run query",
+            "description": "Run a search query on the Splunk device. Please escape any quotes that are part of the query string",
+            "verbose": "By default, the widget for the &quot;run query&quot; action will show the host, time and raw fields. If you would like to see specific fields parsed out, they can be listed in a comma-separated format in the &quot;display&quot; parameter.<br><br>Please keep in mind that Splunk does not always return all possible fields. Splunk may not return fields that are calculated or not present in the event.<br><br>To work around this you can force Splunk to return specific fields by using the &quot;fields&quot;. This works by appending &quot;| fields + *&quot; to your query. This will return every field, you can replace the asterisk with a comma-separated list of fields.<br><br>Finally, some searches (such as those based on data models) can contain name-spaced fields. If a data model called &quot;my_model&quot; with a search &quot;my_search&quot; has a field &quot;hash&quot; then the field will be named &quot;my_search.hash&quot; and that is what must be used in the Splunk fields command and the display parameter. If using a non-global lookup file that is only accessible by a specific Splunk App, make sure to note the specific Splunk App in your asset configuration. The <b>parse_only</b> parameter, if <b>True</b>, it disables the expansion of search due to evaluation of sub-searches, time term expansion, lookups, tags, eventtypes, and sourcetype alias. This parameter is used for the validation of the Splunk query before fetching the results.",
+            "type": "investigate",
+            "identifier": "execute_search",
+            "read_only": true,
+            "parameters": {
+                "command": {
+                    "description": "Beginning command (in Splunk Processing Language)",
+                    "data_type": "string",
+                    "order": 0,
+                    "required": false,
+                    "value_list": [
+                        "search",
+                        "eval",
+                        "savedsearch",
+                        "stats",
+                        "table",
+                        "tstats"
+                    ],
+                    "default": "search"
+                },
+                "query": {
+                    "description": "Query to run (in Splunk Processing Language)",
+                    "data_type": "string",
+                    "order": 1,
+                    "required": true,
+                    "primary": true,
+                    "contains": [
+                        "splunk query"
+                    ]
+                },
+                "display": {
+                    "description": "Display fields (comma-separated)",
+                    "data_type": "string",
+                    "order": 2,
+                    "required": false
+                },
+                "parse_only": {
+                    "description": "Parse only",
+                    "data_type": "boolean",
+                    "order": 3,
+                    "default": false
+                }
+            },
+            "render": {
+                "type": "custom",
+                "width": 10,
+                "height": 5,
+                "view": "splunk_views.display_view",
+                "title": "Search Results"
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.command",
+                    "data_type": "string",
+                    "example_values": [
+                        "savedsearch"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.display",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.parse_only",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.query",
+                    "data_type": "string",
+                    "contains": [
+                        "splunk query"
+                    ],
+                    "example_values": [
+                        "\"Send to Phantom\""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*._bkt",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._cd",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._indextime",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._raw",
+                    "column_name": "Raw",
+                    "column_order": 2,
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._serial",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._si",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._sourcetype",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*._time",
+                    "column_name": "Time",
+                    "column_order": 1,
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.host",
+                    "column_name": "Host",
+                    "column_order": 0,
+                    "data_type": "string",
+                    "contains": [
+                        "host name"
+                    ],
+                    "example_values": [
+                        "10.1.67.187:8088"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.index",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.linecount",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.source",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sourcetype",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.splunk_server",
+                    "data_type": "string",
+                    "contains": [
+                        "host name"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.total_events",
+                    "data_type": "numeric",
+                    "example_values": [
+                        2
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Total events: 2"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "update event",
+            "description": "Update a notable event",
+            "verbose": "The <b>event_ids</b> parameter takes a single event_id (which has the format: 68E08B8B-A853-3A20-9768-231C97B7EE76@@notable@@a4bd78810ae8e03e285e552fac0ddb23) or an adaptive response SID + RID combo (which has the format: scheduler__admin__SplunkEnterpriseSecuritySuite__RMD515d4671130158e57_at_1532441220_4982+0).<br><br>NOTE: This action only works with a notable event from Splunk ES.<br><br><Second Note: The <b>status</b> parameter takes a string value, but custom status values are unique to installation and not available at app creation. The <b>integer_status</b> parameter takes a positive integer denoting the custom value desired. This integer must be determined by the customer on-site. If set it will override <b>status</b>.",
+            "type": "generic",
+            "identifier": "update_event",
+            "read_only": false,
+            "parameters": {
+                "event_ids": {
+                    "description": "Event ID to update",
+                    "data_type": "string",
+                    "contains": [
+                        "splunk notable event id"
+                    ],
+                    "required": true,
+                    "order": 0,
+                    "primary": true
+                },
+                "comment": {
+                    "description": "New comment for the event",
+                    "data_type": "string",
+                    "required": false,
+                    "order": 5
+                },
+                "status": {
+                    "description": "New status for the event",
+                    "data_type": "string",
+                    "value_list": [
+                        "",
+                        "unassigned",
+                        "new",
+                        "in progress",
+                        "pending",
+                        "resolved",
+                        "closed"
+                    ],
+                    "required": false,
+                    "order": 2
+                },
+                "integer_status": {
+                    "description": "Integer representing custom status value",
+                    "data_type": "numeric",
+                    "required": false,
+                    "order": 3
+                },
+                "urgency": {
+                    "description": "New urgency for the event",
+                    "data_type": "string",
+                    "value_list": [
+                        "",
+                        "informational",
+                        "low",
+                        "medium",
+                        "high",
+                        "critical"
+                    ],
+                    "required": false,
+                    "order": 4
+                },
+                "owner": {
+                    "description": "New owner for the event",
+                    "data_type": "string",
+                    "required": false,
+                    "order": 1
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ],
+                    "column_name": "Status",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.comment",
+                    "data_type": "string",
+                    "example_values": [
+                        "test comment"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.event_ids",
+                    "data_type": "string",
+                    "contains": [
+                        "splunk notable event id"
+                    ],
+                    "example_values": [
+                        "1542751027.136723+0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.integer_status",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.parameter.owner",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.urgency",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.failure_count",
+                    "data_type": "numeric",
+                    "example_values": [
+                        0
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "1 event updated successfully"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.success",
+                    "data_type": "boolean",
+                    "example_values": [
+                        false,
+                        true
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.success_count",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.updated_event_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "2CF264EE-6016-4F6A-BCC3-4B7251E113F7@@notable@@035142b19c09ab645c6bbfb847e866f4"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Updated event id: 2CF264EE-6016-4F6A-BCC3-4B7251E113F7@@notable@@035142b19c09ab645c6bbfb847e866f4"
+                    ],
+                    "column_name": "Message",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "versions": "EQ(*)",
+            "render": {
+                "width": 12,
+                "title": "Update Event",
+                "type": "table",
+                "height": 5
+            }
+        },
+        {
+            "action": "post data",
+            "description": "Post data to Splunk",
+            "verbose": "This action creates an event on Splunk with the data included in the <b>data</b> parameter. If not specified the parameters will default to the following:<ul><li><b>host</b> - The IP of the Phantom instance running the action</li><li><b>index</b> - The default index configured on the Splunk instance</li><li><b>source</b> - &quot;Phantom&quot;</li><li><b>source_type</b> - &quot;Automation/Orchestration Platform&quot;</li></ul>",
+            "type": "generic",
+            "identifier": "post_data",
+            "read_only": false,
+            "parameters": {
+                "data": {
+                    "description": "Data to post",
+                    "data_type": "string",
+                    "required": true,
+                    "order": 0
+                },
+                "host": {
+                    "description": "Host for event",
+                    "data_type": "string",
+                    "contains": [
+                        "ip",
+                        "host name"
+                    ],
+                    "primary": true,
+                    "required": false,
+                    "order": 1
+                },
+                "index": {
+                    "description": "Index to send event to",
+                    "data_type": "string",
+                    "required": false,
+                    "order": 4
+                },
+                "source": {
+                    "description": "Source for event",
+                    "data_type": "string",
+                    "required": false,
+                    "default": "Phantom",
+                    "order": 2
+                },
+                "source_type": {
+                    "description": "Type of source for event",
+                    "data_type": "string",
+                    "required": false,
+                    "default": "Automation/Orchestration Platform",
+                    "order": 3
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "Status",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.data",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.host",
+                    "data_type": "string",
+                    "contains": [
+                        "ip",
+                        "host name"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.index",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.source",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.source_type",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "column_name": "Message",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "versions": "EQ(*)",
+            "render": {
+                "width": 12,
+                "title": "Post Data",
+                "type": "table",
+                "height": 5
+            }
+        }
+    ]
+}

@@ -1,0 +1,228 @@
+<!-- File: readme.html
+  Copyright (c) 2014-2020 Splunk Inc.
+
+  SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
+  without a valid written license from Splunk Inc. is PROHIBITED.
+-->
+<h2>State File Permissions</h2>
+Please check the permissions for the state file as mentioned below.
+<h4>State Filepath</h4>
+<ul>
+  <li>For Non-NRI Instance: /opt/phantom/local_data/app_states/91883aa8-9c81-470b-97a1-5d8f7995f560/{asset_id}_state.json</li>
+  <li>For NRI Instance: /phantomcyber/local_data/app_states/91883aa8-9c81-470b-97a1-5d8f7995f560/{asset_id}_state.json</li>
+</ul>
+<h4>State File Permissions</h4>
+<ul>
+  <li>File Rights: rw-rw-r-- (664) (The phantom user should have read and write access for the state file)</li>
+  <li>File Owner: appropriate phantom user</li>
+</ul>
+<h2> Asset Configuration Parameters </h2>
+<ul>
+  <li>
+    container_name_prefix:
+    <ul>
+      <li>Name to give containers created via ingestion</li>
+      <li>User can select a field name from the events data</li>
+      <ul>
+        <li>If the provided field exists, then container_name_prefix will be the value against the provided field from the events data</li>
+        <li>If the provided field does not exist, then container_name_prefix will be the provided field name itself</li>
+      </ul>
+      <li>If the container_name_prefix parameter is not provided:</li>
+      <ul>
+        <li>If the event data contains '_time' field, then container_name_prefix will be 'Splunk Log Entry on &lt;value of the _time field&gt;'</li>
+        <li>If the event data does not contain '_time' field, then container_name_prefix will be 'Splunk Log Entry'</li>
+      </ul>
+      <li>Users can provide a string. Example: Test title
+    </ul>
+  </li>
+  <li>
+    container_name_values:
+    <ul>
+      <li>Values to append to the container name created via ingestion</li>
+      <li>User can provide CIM fields</li>
+      <li>If the container_name_values parameter is provided:</li>
+      <ul>
+        <li>If the mapping for the provided field exists, then container_name_values will be the value against the provided CIM fields from the internally defined mapping</li>
+        <li>If the mapping for the provided field does not exist, then container_name_values will be the same as the provided CIM fields</li>
+      </ul>
+      <li>If the container_name_values parameter is not provided:</li>
+      <ul>
+        <li>If 'container_name_prefix' parameter is not provided, then container_name_values will be 'source'</li>
+        <li>If 'container_name_prefix' parameter is provided, then container_name_values will be empty</li>
+      </ul>
+      <li>Users can provide a comma-separated string. Example: test1, test2
+    </ul>
+  </li>
+  <li>
+    splunk_app:
+    <ul>
+      <li>The app context of the namespace</li>
+      <li>As per Splunk SDK's documentation if splunk_app parameter is not provided, then "system" will be considered as splunk_app</li>
+    </ul>
+  </li>
+  <li>
+    splunk_owner:
+    <ul>
+      <li>The owner context of the namespace</li>
+      <li>As per Splunk SDK's documentation if splunk_owner parameter is not provided, then "nobody" will be considered as splunk_owner</li>
+    </ul>
+  </li>
+  <li>
+    on_poll_display:
+    <ul>
+      <li>Fields to save with On Poll</li>
+      <li>Users can select the fields from the events which the user wants to ingest in the artifact</li>
+      <li>If the on_poll_display parameter is not provided, then all the fields that are extracted from the events will be ingested in the respective artifacts</li>
+      <li>Users can provide comma-separated field names. Example: field1, field2, field3</li>
+    </ul>
+  </li>
+  <li>
+    If the on_poll_query(query to use with On Poll) parameter is not provided, then an error message will be returned<br>
+  </li>
+  <li>
+    If the on_poll_command(command for the query to use with On Poll) parameter is not provided and the on_poll_query does not start with "|" or "search", then "search" keyword is added at the beginning of the on_poll_query<br>
+    Example:
+      <ul>
+        <li>
+          on_poll_command: None<br>
+          on_poll_query: index = "main"<br>
+          Final query generated internally: search index = "main"
+        </li>
+      </ul>
+  </li>
+  <li>
+    If the on_poll_command parameter is not provided and the on_poll_query starts with "|" or "search", then the final query would be the same as the query provided in the on_poll_query parameter<br>
+    Example:
+      <ul>
+        <li>
+          on_poll_command: None<br>
+          on_poll_query: search index = "main"<br>
+          Final query generated internally: search index = "main"
+        </li>
+      </ul>
+  </li>
+  <li>
+    If on_poll_command parameter is provided, then query is formed as: {on_poll_command} {on_poll_query}<br>
+    Example:
+      <ul>
+        <li>
+          on_poll_command: search<br>
+          on_poll_query: index = "main"<br>
+          Final query generated internally: search index = "main"
+        </li>
+      </ul>
+  </li>
+</ul>
+
+
+<h2> On Poll </h2>
+<ul>
+  <li>Notes</li>
+  <ul>
+    <li>
+      In case "on poll" returns any 4XX except 403, validate your search Query on Splunk
+    </li>
+    <li>
+      Sample "Query" to use with On Poll: index="_internal" | stats count by host, source, sourcetype | head 5 | rename host as h0st |  rename source as devicehostname
+    </li>
+    <li>
+      Sample "Fields to save with On Poll" (if none given, "on poll" will store all the fields): source,sourcetype,hostname
+    </li>
+    <li>
+      For the <b>on_poll_parse_only</b> parameter, if <b>True</b>, disables the expansion of search due to evaluation of sub-searches, time term expansion, lookups, tags, eventtypes, and sourcetype aliases. This parameter is used for the validation of the Splunk query before fetching the results
+    </li>
+  </ul>
+  <br>
+  <li>Helpful examples to run on poll</li>
+  <ol>
+    <li>
+      The query will fetch top 10 events from the result of index = "main" search.
+    </li>
+    <ul>
+      <li>on_poll_command: "search"<br></li>
+      <li>on_poll_query: index = "main" | head 10<br></li>
+      <li>Final query generated internally: search index = "main" | head 10<br></li>
+    </ul>
+    <li>
+      The query will execute the query saved in the savedsearch named "Dashboard Views - Action History".
+    </li>
+    <ul>
+      <li>on_poll_command: "savedsearch"<br></li>
+      <li>on_poll_query: "Dashboard Views - Action History"<br></li>
+      <li>Final query generated internally: savedsearch "Dashboard Views - Action History"<br></li>
+    </ul>
+    <li>
+      The query will perform statistics for datamodel and will give total count of events fetched for datamodel = authentication.
+    </li>
+    <ul>
+      <li>on_poll_command: "tstats"<br></li>
+      <li>on_poll_query: "count from datamodel=Authentication"<br></li>
+      <li>Final query generated internally: "tstats count from datamodel=Authentication"<br></li>
+    </ul>
+    <li>
+      The query will  display field "a" in table format for the results fetched from 'search index = "_internal"' search.
+    </li>
+    <ul>
+      <li>on_poll_command: None<br></li>
+      <li>on_poll_query: index = "_internal" | table a<br></li>
+      <li>Final query generated internally: search index = "_internal" | table a<br></li>
+    </ul>
+    <li>
+      This query will fetch all the events with sourcetype = "modular_alerts:notable", app="phantom", and user="admin".
+    </li>
+    <ul>
+      <li>on_poll_command: None<br></li>
+      <li>on_poll_query: index=* sourcetype="modular_alerts:notable" app="phantom" user="admin"<br></li>
+      <li>Final query generated internally: search index=* sourcetype="modular_alerts:notable" app="phantom" user="admin"<br></li>
+    </ul>
+    <li>
+      This query will get the count of the events that are indexed in index named "main".
+    </li>
+    <ul>
+      <li>on_poll_command: None<br></li>
+      <li>on_poll_query: index="main" | stats count<br></li>
+      <li>Final query generated internally: search index="main" | stats count<br></li>
+    </ul>
+    <li>
+      This query will add a field with name = "a" and value = "abc" in all the events that are indexed in index named "main".
+    </li>
+    <ul>
+      <li>on_poll_command: None<br></li>
+      <li>on_poll_query: index="main" | eval a = "abc"<br></li>
+      <li>Final query generated internally: search index="main" | eval a = "abc"<br></li>
+    </ul>
+    <li>
+      This query will fetch only the sourcetype of all the events that are indexed in index named "main".
+    </li>
+    <ul>
+      <li>on_poll_command: None<br></li>
+      <li>on_poll_query: index="main" | fields sourcetype<br></li>
+      <li>Final query generated internally: search index="main" | fields sourcetype<br></li>
+    </ul>
+    <li>
+      This query will fetch all the events having tag = error and index = main.
+    </li>
+    <ul>
+      <li>on_poll_command: None<br></li>
+      <li>on_poll_query: index="_internal" tag=error<br></li>
+      <li>Final query generated internally: search index="_internal" tag="error"<br></li>
+    </ul>
+    <li>
+      This query will show the data of "ppf_action_history_searches" lookup.
+    </li>
+    <ul>
+      <li>on_poll_command: None<br></li>
+      <li>on_poll_query: |inputlookup ppf_action_history_searches<br></li>
+      <li>Final query generated internally: |inputlookup ppf_action_history_searches<br></li>
+    </ul>
+  </ol>
+</ul>
+<h2>Naming Ingested Containers</h2>
+<p>
+By default, the "source" field is used to name the ingested containers.
+To customize the container names, use the two settings in the asset configuration.
+For example, if a hostname is expected in the container name, the "Name to give containers created via ingestion" parameter
+can be set to "Notable Splunk Event" and "Values to append to container name" parameter can be set to "host".
+This will set the container name to "Notable Splunk Event, host=my.sample.host".
+The appended values can be a comma-separated list.
+</p>
