@@ -2,7 +2,7 @@
 ## Objective
 
 
-This project was created in response to a marked increase in work from home employees, which has inevitably led to a significant rise in Zoom usage. The objective of this project is to supplement log data provided by Zoom webhooks with important additional context (e.g., was the meeting password protected, was waiting room turned on). Additionally, we wanted to provide security practitioners to proactively ensure that security best practices are being followed with regards to Zoom meetings.
+This project was created in response to a marked increase in work from home employees, which has inevitably led to a significant rise in Zoom usage. The objective of this project is to supplement log data provided by Zoom webhooks with important additional context (e.g., was the meeting password protected, was waiting room turned on). Additionally, we wanted to provide security practitioners a way to proactively ensure that security best practices are being followed with regards to Zoom meetings.
 
 ## The Documentation
 This project is broken into several parts:
