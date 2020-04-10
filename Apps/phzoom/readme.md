@@ -146,7 +146,7 @@ The Splunk Add-on for Zoom Enrichment app can be found [here](../../Splunk_Apps/
 
 ### How to install
 
-The Playbooks provided with this project can be installed by downloading the "*.tgz" files, navigating to the "playbooks" screen in Phantom, and then clicking the "Import Playbook" button. There is no need to unzip these fields.
+Download the spl file. Login to Splunk. Go to "Manage Apps". Click "Install App from File."
 
 ### About
 
