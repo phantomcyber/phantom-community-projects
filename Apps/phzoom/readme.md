@@ -66,6 +66,8 @@ These two actions will give you data that can be used to gain insight into who i
 
 ## **Updated** Splunk App for Phantom
 
+**DISCLAIMER**: This is a fork of the Splunk App for Phantom, not officially supported.
+ 
 ### Where to find it
 
 You can find the Update Splunk app [here](../splunk)
