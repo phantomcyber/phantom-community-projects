@@ -97,7 +97,7 @@ The fields required for configuration are as follows:
 
 ### Where to find them
 
-The playbooks associated with this project can be found [here](../../playbooks/Zoom_Enrichment_Use_Case)
+The playbooks associated with this project can be found [here](../../Playbooks/Zoom_Enrichment_Use_Case)
 
 ### How to install
 
