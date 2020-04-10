@@ -122,7 +122,6 @@ Currently, four playbooks are provided to demonstrate the functionality provided
 3. Zoom Scheduled Meeting Enrichment
    - This playbook is designed to respond to ingested meeting.created events with a future start_time (i.e., future meetings). It will get the meeting invite for the meeting, get information about the host of the meeting, and send the meeting invite details to the zoom_meeting_invites kvstore provided by the Splunk Add-on for Zoom Enrichment.
    - Additionally, if it is discovered that no password is set on the meeting, the meeting will be updated with a password, and an education email will be sento the meeting host informing them of the change and the risk of unprotected Zoom meetings.
-   - Note: The `get meeting info` action will not run against future scheduled meetings, however the `get meeting invite` action can be used. This gives less information than `get meeting info` but it *does* provide enough information to determine if a password has been set on the meeting.
    - Modification Recommendations:
      - Review the email message and customize it to what you want.
      - Decide if you really enforce a password on the scheduled meeting. If not, you may want to modify the meeting_host notification message.
