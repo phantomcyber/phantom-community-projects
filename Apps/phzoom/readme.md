@@ -110,6 +110,7 @@ Currently, four playbooks are provided to demonstrate the functionality provided
    - This playbook is designed to route meeting records from Splunk to the correct playbook.
      - Meeting.created goes to Zoom Scheduled Meeting Enrichment playbook
      - Meeting.started goes to Zoom Meeting Enrichment playbook
+   - When ready to fully automate Zoom enrichment, set this playbook to active and "Operates On" to the label configured for ingest.
 2. Zoom Meeting Enrichment
    - This playbook is designed to respond to ingested meeting.started. It will get the information from the in-flight meeting, get information about those host of that meeting, and send the meeting details to the zoom_meeting_details kvstore provided in the Splunk Add-on for Zoom Enrichment
    - Additionally, if it is discovered that no password set on the meeting, an educational email will be sent to the meeting host informing them of the risks of unprotected Zoom meetings.
