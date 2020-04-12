@@ -119,7 +119,7 @@ class ZoomConnector(BaseConnector):
         token = self._get_jwt(config)
 
         headers = {
-            'Authorization': 'bearer {}'.format(token),
+            'Authorization': 'bearer {}'.format(token.decode('utf-8')),
             'User-Agent': 'Zoom-Jwt-Request',
             'content-type': 'application/json'
         }
