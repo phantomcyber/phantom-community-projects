@@ -34,13 +34,13 @@
             "description": "API Key",
             "data_type": "password",
             "required": true,
-            "order": 0
+            "order": 2
         },
         "api_secret": {
             "description": "API Secret",
             "data_type": "password",
             "required": true,
-            "order": 1
+            "order": 3
         }
     },
     "pip_dependencies": {
