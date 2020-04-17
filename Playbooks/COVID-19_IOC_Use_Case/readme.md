@@ -1,4 +1,4 @@
-### COVID-19 IOC Playbook
+# COVID-19 IOC Playbook
 
 This playbook was written as a companion to [TA-covidiocs](https://github.com/splunk/ta-covidiocs), which is a free Splunk TA designed download IOCs related to COVID related atttacks. 
 
