@@ -19,7 +19,7 @@ The playbook will search for the existence of event data in the lookups provided
 - fileHashMd5
 - sourceAddress
 
-If matches are found the playbook will add the matched indicators to HUD Cards by category (URLs, Hashes, IPs, Domains). Additionally, an artifact field "covid_related = yes" will be added to the artifact from where the indicator came. The artifact field will allow upstream playbooks to easily discern whether the event contains COVID related malicious indicators by searching for artifacts with **artifact:*.cef.codid_related = yes**. 
+If matches are found the playbook will add the matched indicators to HUD Cards by category (URLs, Hashes, IPs, Domains). Additionally, an artifact field "covid_related = yes" will be added to the artifact from where the indicator came. This new artifact field will allow upstream playbooks to easily discern whether the event contains COVID related malicious indicators by searching for artifacts with **artifact:*.cef.covid_related = yes**. 
 
 ### How to install it?
 
