@@ -14,8 +14,9 @@
     "utctime_updated": "2019-10-27T05:06:05.140684Z",
     "package_name": "phantom_adldap",
     "main_module": "adldap_connector.pyc",
-    "min_phantom_version": "4.6.18265",
-    "app_wizard_version": "1.0.1",
+    "min_phantom_version": "4.8.24304",
+    "app_wizard_version": "1.0.2",
+    "python_version": "2.7",
     "pip_dependencies": {
         "wheel": [
             {
@@ -211,7 +212,7 @@
                     "order": 1
                 },
                 "groups": {
-                    "description": "Semi-colon (';') separated list of groups to which the members will be added. If 'use samaccountname' is false, then these must be distinguished names.",
+                    "description": "Semi-colon (';') separated list of groups from which the members will be removed. If 'use samaccountname' is false, then these must be distinguished names.",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -614,7 +615,7 @@
             "versions": "EQ(*)",
             "parameters": {
                 "object": {
-                    "description": "Specify the dn to enable",
+                    "description": "specify the dn to move",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -837,33 +838,43 @@
             "type": "investigate",
             "read_only": true,
             "parameters": {
+                "use_samaccountname": {
+                    "description": "Use sAMAccountName instead of distinguishedName",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": false,
+                    "order": 0
+                },
                 "user": {
-                    "description": "The semi-colon separated principals",
+                    "description": "User whose attributes are to be modified",
                     "data_type": "string",
                     "required": true,
                     "primary": false,
                     "contains": [],
                     "value_list": [],
                     "default": "",
-                    "order": 0
-                },
-                "attribute": {
-                    "description": "Semi-colon separated list of attributes to collect.",
-                    "data_type": "string",
-                    "required": true,
-                    "primary": false,
-                    "contains": [],
-                    "default": "samaccountname",
                     "order": 1
                 },
-                "value": {
-                    "description": "Semi-colon separated list of attributes to collect.",
+                "attribute": {
+                    "description": "The attribute to modify (add/delete/replace)",
                     "data_type": "string",
                     "required": true,
                     "primary": false,
                     "contains": [],
-                    "default": "samaccountname",
+                    "default": "mail",
                     "order": 2
+                },
+                "value": {
+                    "description": "Attribute value",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "default": "user@foo.bar",
+                    "order": 3
                 },
                 "action": {
                     "description": "Semi-colon separated list of attributes to collect.",
@@ -874,7 +885,7 @@
                         "ADD", "DELETE", "REPLACE"
                     ],
                     "default": "samaccountname",
-                    "order": 3
+                    "order": 4
                 }
             },
             "output": [
