@@ -14,8 +14,9 @@
     "utctime_updated": "2019-10-27T05:06:05.140684Z",
     "package_name": "phantom_adldap",
     "main_module": "adldap_connector.pyc",
-    "min_phantom_version": "4.6.18265",
-    "app_wizard_version": "1.0.1",
+    "min_phantom_version": "4.8.24304",
+    "app_wizard_version": "1.0.2",
+    "python_version": "2.7",
     "pip_dependencies": {
         "wheel": [
             {
@@ -211,7 +212,7 @@
                     "order": 1
                 },
                 "groups": {
-                    "description": "Semi-colon (';') separated list of groups to which the members will be added. If 'use samaccountname' is false, then these must be distinguished names.",
+                    "description": "Semi-colon (';') separated list of groups from which the members will be removed. If 'use samaccountname' is false, then these must be distinguished names.",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -614,7 +615,7 @@
             "versions": "EQ(*)",
             "parameters": {
                 "object": {
-                    "description": "Specify the dn to enable",
+                    "description": "specify the dn to move",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -837,33 +838,42 @@
             "type": "investigate",
             "read_only": true,
             "parameters": {
-                "user": {
-                    "description": "The semi-colon separated principals",
-                    "data_type": "string",
-                    "required": true,
+                "use_samaccountname": {
+                    "description": "Use sAMAccountName instead of distinguishedName",
+                    "data_type": "boolean",
+                    "required": false,
                     "primary": false,
-                    "contains": [],
                     "value_list": [],
-                    "default": "",
+                    "default": false,
                     "order": 0
                 },
-                "attribute": {
-                    "description": "Semi-colon separated list of attributes to collect.",
+                "user": {
+                    "description": "User whose attributes are to be modified",
                     "data_type": "string",
                     "required": true,
                     "primary": false,
-                    "contains": [],
-                    "default": "samaccountname",
+                    "contains": [
+                        "user name"
+                    ],
+                    "value_list": [],
+                    "default": "",
                     "order": 1
                 },
-                "value": {
-                    "description": "Semi-colon separated list of attributes to collect.",
+                "attribute": {
+                    "description": "The attribute to modify (add/delete/replace)",
                     "data_type": "string",
                     "required": true,
                     "primary": false,
-                    "contains": [],
-                    "default": "samaccountname",
+                    "default": "mail",
                     "order": 2
+                },
+                "value": {
+                    "description": "Attribute value",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "default": "user@foo.bar",
+                    "order": 3
                 },
                 "action": {
                     "description": "Semi-colon separated list of attributes to collect.",
@@ -874,34 +884,65 @@
                         "ADD", "DELETE", "REPLACE"
                     ],
                     "default": "samaccountname",
-                    "order": 3
+                    "order": 4
                 }
             },
             "output": [
                 {
-                    "data_path": "action_result.parameter.principals",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "search_base",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.status",
-                    "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 3
+                    "data_path": "action_result.parameter.use_samaccountname",
+                    "data_type": "boolean"
                 },
                 {
                     "data_path": "action_result.message",
                     "data_type": "string"
+                },                
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.user",
+                    "data_type": "string",
+                    "contains": [
+                        "user name"
+                    ],
+                    "column_name": "user",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.attribute",
+                    "data_type": "string",
+                    "column_name": "attribute",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.parameter.value",
+                    "data_type": "string",
+                    "column_name": "new value",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.parameter.action",
+                    "data_type": "string",
+                    "column_name": "action",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "boolean",
+                    "column_name": "status",
+                    "column_order": 4
+                },
+                {
+                    "data_path": "action_result.data.*.entries.*.attributes",
+                    "data_type": "string"
                 }
             ],
             "render": {
-                "type": "custom",
+                "type": "table",
                 "width": 10,
                 "height": 5,
-                "view": "query_view.display_attributes",
-                "title": "AD Query"
+                "title": "Set Attributes"
             },
             "versions": "EQ(*)"
         }
