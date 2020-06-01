@@ -18,6 +18,7 @@ import ldap3.extend.microsoft.unlockAccount
 from ldap3.core.exceptions import LDAPSocketOpenError
 from ldap3.utils.dn import parse_dn
 import json
+import os
 # from adldap_consts import *
 
 
@@ -135,7 +136,6 @@ class AdLdapConnector(BaseConnector):
             if samaccountname in return_value:
                 return_value[samaccountname] = (entries['attributes']['distinguishedName']).lower()
 
-        self.debug_print("[DEBUG] sam = {}, len(sam) = {}".format(sam, len(sam)))
         self.debug_print("[DEBUG] _sam_to_dn return_value = {}".format(return_value))
 
         # if action_result, add summary regarding number of records requested
@@ -447,7 +447,6 @@ class AdLdapConnector(BaseConnector):
 
     def _handle_set_attribute(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
-        # summary = action_result.update_summary({})
 
         user = param['user']
         attribute = param['attribute']
@@ -495,16 +494,9 @@ class AdLdapConnector(BaseConnector):
                     e)
             )
 
-        # ['data']['entries'][0]['attributes']
-        if ret:
-            self.debug_print("[DEBUG] ret is true")
-            action_result.add_data({
-                "entries": [{"attributes": {
-                    "sam": "is testing"
-                }}]
-            })
-        action_result.add_data({"modified": ret})
-
+        action_result.add_data({"message": ("Success" if ret else "Failed")})
+        action_result.set_status(ret)
+        action_result.update_summary({"summary": "Successfully Set Attributes"})
         self.debug_print("[DEBUG] resp = {}".format(self._ldap_connection.response_to_json()))
         return RetVal(
             action_result.set_status(phantom.APP_SUCCESS)
@@ -638,9 +630,8 @@ class AdLdapConnector(BaseConnector):
 
         ret_val = phantom.APP_SUCCESS
 
-        # Get the action that we are supposed to execute for this App Run
         action_id = self.get_action_identifier()
-
+        self.debug_print("ADLDAPENV = {}".format(os.environ))
         self.debug_print("action_id", self.get_action_identifier())
 
         if action_id == 'test_connectivity':
