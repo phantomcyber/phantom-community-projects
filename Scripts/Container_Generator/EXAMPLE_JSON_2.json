@@ -1,0 +1,19 @@
+[
+	{
+		"name": "some artifact",
+		"cef": {
+			"sourceDnsDomain": "www.splunk.com",
+			"destinationDnsDomain": "www.phantom.us"
+		}
+	},
+	{
+		"name": "a second artifact"
+	},
+	{
+		"name": "A third artifact with custom fields",
+		"cef": {
+			"test_field_1": 1,
+			"test_field_2": [1, 2, 3]
+		}
+	}
+]
