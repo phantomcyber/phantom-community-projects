@@ -105,6 +105,7 @@ Success: Container(s) created.
 ```
 
 
+
 ## Authentication Types
 
 You can use ether username/password (as in the screenshots above) to log in or you can use an API key. If you do not specify any authentication-related parameters, you will be prompted for username and password. However you can specify `-k` to use an Automation user's key. For example:
@@ -116,4 +117,3 @@ Success: Container(s) created.
 ```
 
 In the above example, I specified `-k` and instead of a username and password, I was prompted for the API key. 
-
