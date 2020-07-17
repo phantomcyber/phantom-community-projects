@@ -1,0 +1,8 @@
+[
+	{
+		"name": "some artifact",
+		"cef": {
+			"sourceDnsDomain": "www.splunk.com"
+		}
+	}
+]
