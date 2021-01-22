@@ -59,13 +59,20 @@
             "default": true,
             "order": 3
         },
+        "validate_ssl_cert": {
+            "description": "Select if you want to validate the LDAP SSL certificate",
+            "data_type": "boolean",
+            "required": true,
+            "default": true,
+            "order": 4
+        },
         "ssl_port": {
             "description": "The port to bind for SSL (default 636)",
             "data_type": "numeric",
             "required": true,
             "value_list": [],
             "default": "636",
-            "order": 4
+            "order": 5
         }
     },
     "actions": [

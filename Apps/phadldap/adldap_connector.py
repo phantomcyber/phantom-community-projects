@@ -17,6 +17,8 @@ import ldap3.extend.microsoft.removeMembersFromGroups
 import ldap3.extend.microsoft.unlockAccount
 from ldap3.core.exceptions import LDAPSocketOpenError
 from ldap3.utils.dn import parse_dn
+from ldap3 import Server, Connection, Tls
+import ssl
 import json
 import os
 # from adldap_consts import *
@@ -49,11 +51,18 @@ class AdLdapConnector(BaseConnector):
             self._ldap_connection.unbind()
 
         try:
+
+            if self._validate_ssl_cert:
+                tls = Tls(validate=ssl.CERT_REQUIRED)
+            else:
+                tls = Tls(validate=ssl.CERT_NONE)
+
             server_param = {
                 "use_ssl": self._ssl,
                 "port": self._ssl_port,
                 "host": self._server,
-                "get_info": ldap3.ALL
+                "get_info": ldap3.ALL,
+                "tls": tls
             }
 
             self._ldap_server = ldap3.Server(**server_param)
@@ -683,6 +692,7 @@ class AdLdapConnector(BaseConnector):
         self._username = config['username']
         self._password = config['password']
         self._ssl = config['force_ssl']
+        self._validate_ssl_cert = config['validate_ssl_cert']
         self._ssl_port = int(config['ssl_port'])
         self.connected = False
         self._ldap_connection = None
