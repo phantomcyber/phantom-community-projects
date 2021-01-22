@@ -92,7 +92,7 @@ class AdLdapConnector(BaseConnector):
             if action_result:
                 return action_result.set_status(
                     phantom.APP_ERROR,
-                    status_message="",
+                    status_message=e,
                     exception=e
                 )
             else:
