@@ -5,6 +5,7 @@ This playbook is an example of how the AWS STS app can be used to assume a role 
 ### Prerequisites
 
 1. You will need an AWS environment with at least an access key that has permission to assume a role and a role that can be assumed. The AWS Knowledge Center has a nice tutorial that walks through creation of all the necessary resources to demonstrate the assumeRole capability using the AWS command line tool: https://aws.amazon.com/premiumsupport/knowledge-center/iam-assume-role-cli/
+1. Create a custom list called **aws_assume_role_role_arn_list** with a list of role ARNs that Phantom can assume the role of. In the tutorial linked above, **arn:aws:iam::123456789012:role/example-role** is the role that would go in the custom list. Put each role in the first column on its own row.
 
 ### How it works?
 
